@@ -5,7 +5,7 @@ metadata:
   namespace: kube-system
 spec:
   serviceAccountName: kustomize-controller
-  interval: 12h
+  interval: 5m
   retryInterval: 3m
   wait: true
   timeout: 15m

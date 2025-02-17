@@ -5,7 +5,7 @@ metadata:
   name: kyverno-configs
 spec:
   serviceAccountName: flux-system-services
-  interval: 1h
+  interval: 5m
   retryInterval: 2m
   timeout: 5m
   prune: true

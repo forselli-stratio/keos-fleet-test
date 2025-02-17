@@ -18,7 +18,7 @@ metadata:
   name: flux-system
   namespace: kube-system
 spec:
-  interval: 10m0s
+  interval: 5m0s
   path: ./clusters/eosdev2
   prune: true
   sourceRef:
