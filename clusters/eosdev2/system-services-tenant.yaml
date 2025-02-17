@@ -13,7 +13,7 @@ spec:
   prune: true
   sourceRef:
     kind: GitRepository
-    name: kube-system
+    name: flux-system
   postBuild:
     substituteFrom:
       - kind: ConfigMap
