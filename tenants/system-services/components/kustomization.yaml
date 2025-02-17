@@ -4,7 +4,6 @@ namespace: kube-system
 resources:
   - rbac.yaml
   - source.yaml
-  - kyverno.yaml
 labels:
   - pairs:
       toolkit.fluxcd.io/tenant: system-services
