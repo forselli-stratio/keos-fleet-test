@@ -8,6 +8,7 @@ metadata:
   annotations:
     kustomize.toolkit.fluxcd.io/ssa: "Merge"
 data:
+  ENVIRONMENT: "staging"
   STRATIO_SIZE: "small"
   GIT_BRANCH: "main"
   CLUSTER_NAME: "eosdev2"
