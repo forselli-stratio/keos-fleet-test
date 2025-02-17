@@ -1,0 +1,38 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: flux-apps
+spec:
+  interval: 1m
+  ref:
+    branch: ${GIT_BRANCH}
+  secretRef:
+    name: flux-apps
+  url: https://github.com/forselli-stratio/keos-apps.git
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: flux-postgres
+spec:
+  serviceAccountName: flux-apps
+  interval: 12h
+  retryInterval: 3m
+  path: ./components/postgres/${ENVIRONMENT}
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: stratio-datastores
+  timeout: 15m
+  wait: true
+  patches:
+    - patch: |
+        - op: add
+          path: /spec/serviceAccountName
+          value: flux-apps
+      target:
+        kind: "(HelmRelease|Kustomization)"
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: flux-runtime-info

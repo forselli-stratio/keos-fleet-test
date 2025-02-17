@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flux-runtime-info
+  namespace: flux-system
+  labels:
+    toolkit.fluxcd.io/runtime: "true"
+  annotations:
+    kustomize.toolkit.fluxcd.io/ssa: "Merge"
+data:
+  STRATIO_USE_CASE: "talk-to-your-data-s3"
+  STRATIO_SIZE: "small"
+  GIT_BRANCH: "main"
+  CLUSTER_NAME: "eosdev2"
+  CLUSTER_DOMAIN: "k8s.eosdev2.labs.stratio.com"
