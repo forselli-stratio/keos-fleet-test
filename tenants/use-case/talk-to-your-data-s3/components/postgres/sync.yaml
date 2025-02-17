@@ -22,7 +22,7 @@ spec:
   prune: true
   sourceRef:
     kind: GitRepository
-    name: stratio-datastores
+    name: flux-apps
   timeout: 15m
   wait: true
   patches:

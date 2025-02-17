@@ -5,8 +5,8 @@ metadata:
   namespace: kube-system
 spec:
   serviceAccountName: kustomize-controller
-  # dependsOn:
-  #   - name: flux-system-services-tenant
+  dependsOn:
+    - name: flux-system-services-tenant
   interval: 12h
   retryInterval: 3m
   path: ./tenants/use-case/talk-to-your-data-s3

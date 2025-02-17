@@ -1,29 +1,29 @@
-# apiVersion: kustomize.toolkit.fluxcd.io/v1
-# kind: Kustomization
-# metadata:
-#   name: flux-system-services-tenant
-#   namespace: kube-system
-# spec:
-#   serviceAccountName: kustomize-controller
-#   interval: 12h
-#   retryInterval: 3m
-#   wait: true
-#   timeout: 15m
-#   path: ./tenants/system-services
-#   prune: true
-#   sourceRef:
-#     kind: GitRepository
-#     name: kube-system
-#   postBuild:
-#     substituteFrom:
-#       - kind: ConfigMap
-#         name: flux-runtime-info
-#   patches:
-#     - patch: |
-#         $patch: delete
-#         apiVersion: all
-#         kind: all
-#         metadata:
-#           name: all
-#       target:
-#         labelSelector: toolkit.fluxcd.io/role=automation
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: flux-system-services-tenant
+  namespace: kube-system
+spec:
+  serviceAccountName: kustomize-controller
+  interval: 12h
+  retryInterval: 3m
+  wait: true
+  timeout: 15m
+  path: ./tenants/system-services
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: kube-system
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: flux-runtime-info
+  patches:
+    - patch: |
+        $patch: delete
+        apiVersion: all
+        kind: all
+        metadata:
+          name: all
+      target:
+        labelSelector: toolkit.fluxcd.io/role=automation
