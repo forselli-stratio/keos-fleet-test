@@ -7,6 +7,7 @@ metadata:
     toolkit.fluxcd.io/runtime: "true"
   annotations:
     kustomize.toolkit.fluxcd.io/ssa: "Merge"
+    replicator.v1.mittwald.de/replicate-to: ".*"
 data:
   ENVIRONMENT: "staging"
   STRATIO_SIZE: "small"
