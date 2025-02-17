@@ -9,7 +9,7 @@ metadata:
     kustomize.toolkit.fluxcd.io/ssa: "Merge"
     replicator.v1.mittwald.de/replicate-to: ".*"
 data:
-  ENVIRONMENT: "staging"
+  STRATIO_USE_CASE: "talk-to-your-data"
   STRATIO_SIZE: "small"
   GIT_BRANCH: "main"
   CLUSTER_NAME: "eosdev2"

@@ -13,7 +13,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system-services
-  path: components/vpa/controllers/${ENVIRONMENT}
+  path: components/vpa/controllers/${STRATIO_USE_CASE}
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -31,4 +31,4 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system-services
-  path: components/vpa/configs/${ENVIRONMENT}
+  path: components/vpa/configs/${STRATIO_USE_CASE}

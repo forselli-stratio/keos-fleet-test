@@ -13,4 +13,4 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system-services
-  path: components/kyverno/configs/${ENVIRONMENT}
+  path: components/kyverno/configs/${STRATIO_USE_CASE}
