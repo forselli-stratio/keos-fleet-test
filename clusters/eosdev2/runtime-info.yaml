@@ -8,7 +8,6 @@ metadata:
   annotations:
     kustomize.toolkit.fluxcd.io/ssa: "Merge"
 data:
-  STRATIO_USE_CASE: "talk-to-your-data-s3"
   STRATIO_SIZE: "small"
   GIT_BRANCH: "main"
   CLUSTER_NAME: "eosdev2"

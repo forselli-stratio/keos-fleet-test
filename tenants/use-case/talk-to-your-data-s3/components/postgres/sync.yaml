@@ -18,7 +18,7 @@ spec:
   serviceAccountName: flux-apps
   interval: 12h
   retryInterval: 3m
-  path: ./components/postgres/${ENVIRONMENT}
+  path: ./components/postgres/${STRATIO_SIZE}
   prune: true
   sourceRef:
     kind: GitRepository
