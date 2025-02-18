@@ -27,3 +27,26 @@ spec:
           name: all
       target:
         labelSelector: toolkit.fluxcd.io/role=automation
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: flux-apps-tenant-overrides
+  namespace: kube-system
+spec:
+  serviceAccountName: kustomize-controller
+  dependsOn:
+    - name: flux-apps-tenant
+  interval: 5m
+  retryInterval: 3m
+  wait: true
+  timeout: 15m
+  path: apps-overrides
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: flux-runtime-info
