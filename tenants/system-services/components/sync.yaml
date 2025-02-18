@@ -1,0 +1,31 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: flux-system-services
+spec:
+  interval: 1m
+  ref:
+    branch: ${GIT_BRANCH}
+  secretRef:
+    name: flux-system
+  url: https://github.com/forselli-stratio/keos-system-services.git
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: flux-system-services-runtime-info
+spec:
+  serviceAccountName: flux-system-services
+  interval: 12h
+  retryInterval: 3m
+  path: ./components
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system-services
+  timeout: 15m
+  wait: true
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: flux-runtime-info

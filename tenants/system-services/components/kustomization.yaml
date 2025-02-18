@@ -3,7 +3,7 @@ kind: Kustomization
 namespace: kube-system
 resources:
   - rbac.yaml
-  - source.yaml
+  - sync.yaml
   - sis.yaml
   - gosec.yaml
   - stratio-panel-ui.yaml

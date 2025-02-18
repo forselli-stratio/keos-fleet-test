@@ -27,4 +27,3 @@ spec:
           name: all
       target:
         labelSelector: toolkit.fluxcd.io/role=automation
-
