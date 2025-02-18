@@ -1,0 +1,254 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: psql
+  namespace: stratio-datastores
+spec:
+  releaseName: psql
+  chart:
+    spec:
+      chart: nxs-universal-chart
+      version: 2.8.3
+      sourceRef:
+        kind: HelmRepository
+        name: nixys
+      interval: 1m
+  interval: 1m
+  timeout: 10m
+  install:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+    force: false
+  values:
+    extraDeploy:
+      psql: |-
+        kind: "PgCluster"
+        apiVersion: "postgres.stratio.com/v1"
+        metadata:
+          name: "psql"
+        spec:
+          autoscaler:
+            vertical:
+              enable: true
+              resources:
+                controlledResources:
+                  - "cpu"
+                  - "memory"
+                controlledValues: "RequestsAndLimits"
+              updatePolicy:
+                minReplicas: 1
+                updateMode: "Off"
+          backup:
+            pgbackrest:
+              logLevel: "detail"
+              name: ""
+              namespace: ""
+              pgRepositroniPort: 8008
+              port: 8432
+              repository:
+                - id: 1
+                  storageVerifyTls: "n"
+                  type: "posix"
+            walArchiver: false
+          bootstrap:
+            pgbackrest:
+              logLevel: "detail"
+              name: ""
+              namespace: ""
+              pgRepositroniPort: 8008
+              port: 8432
+              repository:
+                cipher:
+                  enable: false
+                  secretsBundle:
+                    name: "cipher"
+                    namespace: "keos-core"
+                id: 1
+                s3:
+                  UriStyle: "path"
+                  region: "us-west-2"
+                  secretsBundle:
+                    name: "s3"
+                    namespace: "keos-core"
+                storageVerifyTls: "n"
+                type: "posix"
+            type: "initdb"
+          constraints:
+            affinity:
+              podAntiAffinity:
+                requiredDuringSchedulingIgnoredDuringExecution:
+                  -   labelSelector:
+                      matchExpressions:
+                        - key: "pgcluster.stratio.com/pgcluster-name"
+                          operator: "In"
+                          values:
+                            - "psql"
+                      topologyKey: "kubernetes.io/hostname"
+          healthchecks:
+            livenessProbe:
+              failureThreshold: 3
+              initialDelaySeconds: 20
+              periodSeconds: 5
+              successThreshold: 1
+              timeoutSeconds: 1
+            readinessProbe:
+              failureThreshold: 3
+              initialDelaySeconds: 15
+              periodSeconds: 15
+              successThreshold: 1
+              timeoutSeconds: 1
+          image: "qa.int.stratio.com:11443/stratio/postgresql-task:0.8.2"
+          imagePullPolicy: "Always"
+          instances: 3
+          monitoring:
+            enable: true
+            interval: "30s"
+          patroni:
+            dcs:
+              check_timeline: false
+              failsafe_mode: true
+              loop_wait: 10
+              master_start_timeout: 300
+              master_stop_timeout: 0
+              max_timelines_history: 2
+              maximum_lag_on_failover: 1048576
+              maximum_lag_on_syncnode: -1
+              retry_timeout: 10
+              ttl: 30
+            logLevel: "INFO"
+            postgresql:
+              remove_data_directory_on_diverged_timelines: false
+              remove_data_directory_on_rewind_failure: true
+              use_pg_rewind: true
+              use_slots: true
+          pgtroni:
+            logLevel: "INFO"
+            timeout: 60
+          podDisruptionBudget:
+            primary:
+              enable: true
+              maxUnavailable: 0
+            replicasAsync:
+              enable: true
+              minAvailable: 1
+            replicasSync:
+              enable: true
+              minAvailable: 1
+          postgresql:
+            config:
+              checkpoint_completion_target: "0.9"
+              effective_cache_size: "3GB"
+              effective_io_concurrency: "300"
+              random_page_cost: "1.1"
+              shared_buffers: "1GB"
+              shared_preload_libraries: "pg_stat_statements"
+              wal_buffers: "16MB"
+              wal_compression: "on"
+              wal_level: "logical"
+            encoding: "UTF-8"
+            logLevel: "INFO"
+            replication:
+              synchronous_node_count: 1
+              type: "SYNC"
+            version: "14"
+            wal-segsize: 16
+          priorityClassName: "applications-critical"
+          resources:
+            limits:
+              cpu: "8"
+              memory: "2048M"
+            requests:
+              cpu: "500m"
+              memory: "2048M"
+          secrets:
+            create: true
+          security:
+            authentication: "CERT"
+            authorization: "CENTRALIZED"
+            gosec:
+              config:
+                agent:
+                  conflict_resolution: "AND"
+                  consecutive_failures: "-1"
+                  domains_enable: "false"
+                  domains_mapping_url: "https://dg-businessglossary-api.keos-core:60000/dictionary"
+                  domains_mappins_url_timeout_ms: "3000"
+                  domains_policies_url: "https://gosec-services-daas.keos-core:8443"
+                  domains_policies_url_timeouts_ms: "3000"
+                  number_iterations: "-1"
+                  number_threads: "300"
+                  orphan_policy: "DENY"
+                  sleep_in_ms: "15000"
+                postgres:
+                  connect_timeout: "30"
+                  groups_prefix: "stratio_group_"
+                  keep_connections: "true"
+                  login_timeout: "30"
+                  max_pool_size: "2"
+                  query_batch_size: "2500"
+                  reparent_enable: "false"
+                  resources_whitelist: "columns"
+                  revoke_public: "true"
+                  socket_timeout: "30"
+                  statement_timeout: "30"
+                  work_mem: "32MB"
+              enable: false
+              healthchecks:
+                livenessProbe:
+                  failureThreshold: 3
+                  initialDelaySeconds: 20
+                  periodSeconds: 5
+                  successThreshold: 1
+                  timeoutSeconds: 1
+                readinessProbe:
+                  failureThreshold: 3
+                  initialDelaySeconds: 15
+                  periodSeconds: 15
+                  successThreshold: 1
+                  timeoutSeconds: 1
+              image: ""
+              imagePullPolicy: "Always"
+              instances: 3
+              logLevel: "INFO"
+              monitoring:
+                enable: true
+                interval: "30s"
+              resources: {}
+              urls:
+                identities: "https://gosec-identities-daas.keos-core:8443"
+                services: "https://gosec-services-daas.keos-core:8443"
+                timeout: 3000
+            serviceAccount:
+              create: true
+              name: "psql"
+            users:
+              dbaas: "dbaas"
+              patroni: "patroni"
+              postgres: "postgres"
+              replicator: "replicator"
+              rewind: "rewind"
+              service: "service"
+          storage:
+            data:
+              accessModes:
+                - "ReadWriteOnce"
+              resources:
+                requests:
+                  storage: "20Gi"
+            enableShmVolume: true
+            wal:
+              accessModes:
+                - "ReadWriteOnce"
+              resources:
+                requests:
+                  storage: "10Gi"
+          updateStrategy:
+            rollingUpdate:
+              partition: 0
+            type: "RollingUpdate"
