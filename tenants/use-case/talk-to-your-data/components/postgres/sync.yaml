@@ -25,13 +25,6 @@ spec:
     name: flux-apps
   timeout: 15m
   wait: true
-  patches:
-    - patch: |
-        - op: add
-          path: /spec/serviceAccountName
-          value: flux-apps
-      target:
-        kind: "(HelmRelease|Kustomization)"
   postBuild:
     substituteFrom:
       - kind: ConfigMap
