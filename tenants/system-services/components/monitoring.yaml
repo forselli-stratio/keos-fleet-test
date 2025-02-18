@@ -1,0 +1,16 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: monitoring-configs
+spec:
+  serviceAccountName: flux-system-services
+  interval: 5m
+  retryInterval: 2m
+  timeout: 5m
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system-services
+  path: components/monitoring/configs/${STRATIO_USE_CASE}

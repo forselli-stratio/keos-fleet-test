@@ -5,6 +5,10 @@ resources:
   - rbac.yaml
   - source.yaml
   - sis.yaml
+  - gosec.yaml
+  - stratio-panel-ui.yaml
+  - stratio-home.yaml
+  - monitoring.yaml
 labels:
   - pairs:
       toolkit.fluxcd.io/tenant: system-services
