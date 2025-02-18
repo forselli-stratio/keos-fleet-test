@@ -41,7 +41,7 @@ spec:
   retryInterval: 3m
   wait: true
   timeout: 15m
-  path: apps-overrides
+  path: ./apps-overrides
   prune: true
   sourceRef:
     kind: GitRepository
