@@ -14,3 +14,7 @@ spec:
     kind: GitRepository
     name: flux-system-services
   path: components/gosec/configs/${STRATIO_USE_CASE}
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: flux-runtime-info
