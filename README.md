@@ -7,7 +7,7 @@
 > The `d1` reference architecture comprised of
 > [d1-fleet](https://github.com/controlplaneio-fluxcd/d1-fleet),
 > [d1-infra](https://github.com/controlplaneio-fluxcd/d1-infra) and
-> [d1-apps](https://github.com/controlplaneio-fluxcd/d1-apps) 
+> [d1-apps](https://github.com/controlplaneio-fluxcd/d1-apps)
 > is a set of best practices and production-ready examples for using Flux
 > to manage the continuous delivery of Kubernetes infrastructure and
 > applications on multi-cluster multi-tenant environments.
@@ -108,7 +108,7 @@ to the `cluster/staging` directory in the `d1-fleet` repository will be automati
 ### Bootstrap with the enterprise version
 
 When using the [ControlPlane enterprise](https://control-plane.io/enterprise-for-flux-cd/)
-distribution for Flux, you need to create a 
+distribution for Flux, you need to create a
 Kubernetes Image Pull Secret for the enterprise registry in the `flux-system` namespace:
 
 ```shell
@@ -146,7 +146,7 @@ Copying an image from the ControlPlane registry to your organization's registry 
  "image-reflector-controller"
  "image-automation-controller"
  )
- 
+
  for controller in "${FLUX_CONTROLLERS[@]}"; do
    crane copy --all-tags ghcr.io/controlplaneio-fluxcd/distroless/$controller  <your-registry>/$controller
  done
@@ -238,7 +238,7 @@ The `flux-runtime-info` ConfigMap is propagated to all namespaces in a cluster b
 and is used by all Flux Kustomizations to perform substitutions when reconciling the components.
 
 The platform team can extend the `flux-runtime-info` ConfigMap with additional fields such as
-cluster region, cloud provider ID, etc. 
+cluster region, cloud provider ID, etc.
 
 ## Onboarding tenants
 
@@ -279,7 +279,7 @@ to all tenant namespaces labeled with `toolkit.fluxcd.io/tenant: apps`.
 
 For each namespace belonging to a tenant, the platform team must define the Kubernetes
 namespace, RBAC, Flux GitRepository and Kustomization custom resources under the
-tenant's directory. 
+tenant's directory.
 
 The directory structure under
 [tenants/apps](https://github.com/controlplaneio-fluxcd/d1-fleet/tree/main/tenants/apps)
@@ -337,7 +337,7 @@ Flux will update the HelmRelease YAML definitions and will push the changes to t
 After the changes are reconciled on staging, the dev team can promote the changes
 to the production clusters by merging the `main` branch into the `production` branch of the `d1-apps` repository.
 
-The platform team is responsible for configuring a dedicated Kubernetes namespace for 
+The platform team is responsible for configuring a dedicated Kubernetes namespace for
 the image policies and defining the Flux image update automation custom resources in the `d1-fleet` repository:
 
 ```shell
@@ -384,7 +384,7 @@ flux bootstrap github \
 After bootstrap, Flux will provision the production cluster with add-ons from `production`
 branch of the `d1-infra` repository.
 
-To kick off the reconciliation of the tenant applications, the platform team must create the 
+To kick off the reconciliation of the tenant applications, the platform team must create the
 `flux-apps` secret in the `flux-system` namespace with the tenant's GitHub PAT:
 
 ```shell
@@ -436,3 +436,16 @@ Flux dashboards:
 
 - Reconciliation stats: `http://localhost:3000/d/flux-cluster/flux-cluster-stats`
 - Controller stats: `http://localhost:3000/d/flux-control-plane/flux-control-plane`
+
+### KEOS Integration
+
+export GITHUB_TOKEN=xxx
+
+kubectl create secret generic flux-system \
+--namespace kube-system \
+  --from-literal=username=forselli-stratio \
+  --from-literal=password=$GITHUB_TOKEN
+
+kubectl annotate secret flux-system --namespace kube-system replicator.v1.mittwald.de/replicate-to=".*"
+
+kubectl kustomize clusters/<CLUSTER_NAME>/flux-system | kubectl apply -f -

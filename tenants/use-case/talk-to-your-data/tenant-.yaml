@@ -1,0 +1,15 @@
+apiVersion: capsule.clastix.io/v1beta1
+kind: Tenant
+metadata:
+  annotations:
+    stratio.tenant.kubernetes.io/disable-gosec-tenancy: 'false'
+    stratio.tenant.kubernetes.io/disable-net-policies: 'false'
+    stratio.tenant.kubernetes.io/disable-own-pki: 'false'
+    stratio.tenant.kubernetes.io/disable-sec-policies: 'false'
+    stratio.tenant.kubernetes.io/tenant-description: ''
+    stratio.tenant.kubernetes.io/gosec-group-input-source-type: 'System'
+  name: stratio
+spec:
+  owners:
+    - kind: Group
+      name: stratio-stratio-owners

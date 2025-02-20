@@ -8,4 +8,4 @@ spec:
     branch: ${GIT_BRANCH}
   secretRef:
     name: flux-system
-  url: https://github.com/forselli-stratio/keos-system-services.git
+  url: https://github.com/forselli-stratio/keos-system-services-test.git
