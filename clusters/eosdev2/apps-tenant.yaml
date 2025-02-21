@@ -1,7 +1,8 @@
+---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: flux-apps-tenant
+  name: flux-apps-tenant-base
   namespace: kube-system
 spec:
   serviceAccountName: kustomize-controller
@@ -9,7 +10,7 @@ spec:
     - name: flux-system-services-tenant
   interval: 5m
   retryInterval: 3m
-  path: ./tenants/use-case/talk-to-your-data
+  path: ./tenants/apps/talk-to-your-data/base
   prune: true
   sourceRef:
     kind: GitRepository
@@ -18,12 +19,24 @@ spec:
     substituteFrom:
       - kind: ConfigMap
         name: flux-runtime-info
-  patches:
-    - patch: |
-        $patch: delete
-        apiVersion: all
-        kind: all
-        metadata:
-          name: all
-      target:
-        labelSelector: toolkit.fluxcd.io/role=automation
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: flux-apps-tenant-components
+  namespace: kube-system
+spec:
+  serviceAccountName: kustomize-controller
+  dependsOn:
+    - name: flux-apps-tenant-base
+  interval: 5m
+  retryInterval: 3m
+  path: ./tenants/apps/talk-to-your-data/components
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: flux-runtime-info

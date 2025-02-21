@@ -1,10 +1,9 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: kube-system
+namespace: stratio-datastores
 resources:
+  - rbac.yaml
   - sync.yaml
-  - automation.yaml
 labels:
   - pairs:
       toolkit.fluxcd.io/tenant: apps
-      toolkit.fluxcd.io/role: automation

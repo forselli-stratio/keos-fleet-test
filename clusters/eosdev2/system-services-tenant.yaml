@@ -9,7 +9,7 @@ spec:
   retryInterval: 3m
   wait: true
   timeout: 15m
-  path: ./tenants/system-services
+  path: ./tenants/system-services/talk-to-your-data
   prune: true
   sourceRef:
     kind: GitRepository
@@ -18,13 +18,3 @@ spec:
     substituteFrom:
       - kind: ConfigMap
         name: flux-runtime-info
-  patches:
-    - patch: |
-        $patch: delete
-        apiVersion: all
-        kind: all
-        metadata:
-          name: all
-      target:
-        labelSelector: toolkit.fluxcd.io/role=automation
-
