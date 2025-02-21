@@ -1,6 +1,0 @@
-apiVersion: postgres.stratio.com/v1
-kind: PgCluster
-metadata:
-  name: psql
-spec:
-  instances: 2
