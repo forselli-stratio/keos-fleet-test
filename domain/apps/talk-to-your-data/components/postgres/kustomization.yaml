@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: stratio-datastores
 resources:
   - rbac.yaml
+  - namespace.yaml
   - sync.yaml
 labels:
   - pairs:
