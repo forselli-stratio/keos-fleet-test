@@ -10,7 +10,7 @@ spec:
     - name: flux-system-services-tenant
   interval: 5m
   retryInterval: 3m
-  path: ./tenants/apps/talk-to-your-data/base
+  path: ./domain/apps/talk-to-your-data/base
   prune: true
   sourceRef:
     kind: GitRepository
@@ -31,7 +31,7 @@ spec:
     - name: flux-apps-tenant-base
   interval: 5m
   retryInterval: 3m
-  path: ./tenants/apps/talk-to-your-data/components
+  path: ./domain/apps/talk-to-your-data/components
   prune: true
   sourceRef:
     kind: GitRepository
