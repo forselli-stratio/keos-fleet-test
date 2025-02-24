@@ -4,7 +4,7 @@ kind: Kustomization
 metadata:
   name: sis-configs
 spec:
-  serviceAccountName: flux-system-services
+  serviceAccountName: kustomize-controller
   interval: 5m
   retryInterval: 2m
   timeout: 5m

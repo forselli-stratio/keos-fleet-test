@@ -14,4 +14,4 @@ spec:
     - kind: Group
       name: stratio-stratio-owners
     - kind: ServiceAccount
-      name: system:serviceaccount:keos-flux:kustomize-controller
+      name: system:serviceaccount:flux-system:kustomize-controller
