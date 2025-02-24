@@ -1,0 +1,42 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: flux-apps-domain-base
+  namespace: kube-system
+spec:
+  serviceAccountName: kustomize-controller
+  dependsOn:
+    - name: flux-system-services-domain
+  interval: 5m
+  retryInterval: 3m
+  path: ./domain/apps/talk-to-your-data/base
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: flux-runtime-info
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: flux-apps-domain-components
+  namespace: kube-system
+spec:
+  serviceAccountName: kustomize-controller
+  dependsOn:
+    - name: flux-apps-domain-base
+  interval: 5m
+  retryInterval: 3m
+  path: ./domain/apps/talk-to-your-data/components
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: flux-runtime-info
