@@ -33,7 +33,7 @@ spec:
     - patch: |
         - op: replace
           path: /spec/instances
-          value: 2
+          value: 0
       target:
         kind: PgCluster
         name: psql
