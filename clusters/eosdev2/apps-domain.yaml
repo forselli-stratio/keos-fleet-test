@@ -40,3 +40,12 @@ spec:
     substituteFrom:
       - kind: ConfigMap
         name: flux-runtime-info
+  patches:
+    - patch: |
+        $patch: delete
+        apiVersion: all
+        kind: all
+        metadata:
+          name: all
+      target:
+        labelSelector: toolkit.fluxcd.io/component=nginx-connectors
