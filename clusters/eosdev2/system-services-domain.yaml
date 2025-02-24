@@ -5,7 +5,7 @@ metadata:
   namespace: kube-system
 spec:
   serviceAccountName: kustomize-controller
-  dependesOn:
+  dependsOn:
     - name: flux-core-domain
   interval: 5m
   retryInterval: 3m
