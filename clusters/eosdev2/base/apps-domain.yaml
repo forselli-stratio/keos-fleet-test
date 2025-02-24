@@ -58,7 +58,7 @@ metadata:
 spec:
   serviceAccountName: kustomize-controller
   dependsOn:
-    - name: flux-apps-domain-components
+    - name: flux-apps-domain-base
   interval: 5m
   retryInterval: 3m
   path: ./clusters/eosdev2/overrides/apps
