@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: flux-runtime-info
-  namespace: kube-system
+  namespace: flux-system
   labels:
     toolkit.fluxcd.io/runtime: "true"
   annotations:
