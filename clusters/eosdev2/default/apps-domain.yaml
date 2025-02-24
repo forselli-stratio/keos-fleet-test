@@ -2,15 +2,15 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: flux-apps-domain-base
+  name: flux-apps-domain-tenant
   namespace: flux-system
 spec:
   serviceAccountName: kustomize-controller
   dependsOn:
-    - name: flux-system-services-domain
+    - name: flux-system-services-domain-components-override
   interval: 5m
   retryInterval: 3m
-  path: ./domain/apps/talk-to-your-data/base
+  path: ./domain/apps/talk-to-your-data/tenant
   prune: true
   sourceRef:
     kind: GitRepository
@@ -28,7 +28,7 @@ metadata:
 spec:
   serviceAccountName: kustomize-controller
   dependsOn:
-    - name: flux-apps-domain-base
+    - name: flux-apps-domain-tenant
   interval: 5m
   retryInterval: 3m
   path: ./domain/apps/talk-to-your-data/components
@@ -40,28 +40,19 @@ spec:
     substituteFrom:
       - kind: ConfigMap
         name: flux-runtime-info
-  patches:
-    - patch: |
-        $patch: delete
-        apiVersion: all
-        kind: all
-        metadata:
-          name: all
-      target:
-        labelSelector: toolkit.fluxcd.io/component=postgres
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: flux-apps-domain-components-overrides
+  name: flux-apps-domain-components-override
   namespace: flux-system
 spec:
   serviceAccountName: kustomize-controller
   dependsOn:
-    - name: flux-apps-domain-base
+    - name: flux-apps-domain-tenant
   interval: 5m
   retryInterval: 3m
-  path: ./clusters/eosdev2/overrides/apps
+  path: ./clusters/eosdev2/override/apps
   prune: true
   sourceRef:
     kind: GitRepository
@@ -70,4 +61,3 @@ spec:
     substituteFrom:
       - kind: ConfigMap
         name: flux-runtime-info
-
