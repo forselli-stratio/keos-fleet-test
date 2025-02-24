@@ -6,9 +6,3 @@ metadata:
     kubernetes.io/metadata.name: stratio-datastores
     name: stratio-datastores
   name: stratio-test
-  ownerReferences:
-  - apiVersion: capsule.clastix.io/v1beta2
-    blockOwnerDeletion: true
-    controller: true
-    kind: Tenant
-    name: stratio
