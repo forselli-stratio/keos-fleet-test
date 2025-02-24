@@ -7,4 +7,4 @@ resources:
   - sync.yaml
 labels:
   - pairs:
-      toolkit.fluxcd.io/tenant: apps
+      toolkit.fluxcd.io/domain: apps

@@ -10,4 +10,4 @@ resources:
   - monitoring.yaml
 labels:
   - pairs:
-      toolkit.fluxcd.io/tenant: system-services
+      toolkit.fluxcd.io/domain: system-services
