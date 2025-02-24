@@ -13,3 +13,5 @@ spec:
   owners:
     - kind: Group
       name: stratio-stratio-owners
+    - kind: ServiceAccount
+      name: kustomize-controller
