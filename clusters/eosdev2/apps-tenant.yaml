@@ -5,7 +5,7 @@ metadata:
   name: flux-apps-domain-base
   namespace: kube-system
 spec:
-  serviceAccountName: cluster-admin
+  serviceAccountName: kustomize-controller
   dependsOn:
     - name: flux-system-services-domain
   interval: 5m
