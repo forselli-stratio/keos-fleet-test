@@ -15,7 +15,7 @@ kind: Kustomization
 metadata:
   name: flux-postgres
 spec:
-  serviceAccountName: kustomize-controller
+  serviceAccountName: flux-apps
   interval: 5m
   retryInterval: 3m
   path: ./components/postgres/${STRATIO_SIZE}
