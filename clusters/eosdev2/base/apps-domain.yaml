@@ -48,4 +48,26 @@ spec:
         metadata:
           name: all
       target:
-        labelSelector: toolkit.fluxcd.io/component=nginx-connectors
+        labelSelector: toolkit.fluxcd.io/component=postgres
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: flux-apps-domain-components-overrides
+  namespace: flux-system
+spec:
+  serviceAccountName: kustomize-controller
+  dependsOn:
+    - name: flux-apps-domain-components
+  interval: 5m
+  retryInterval: 3m
+  path: ./clusters/eosdev2/overrides/apps
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: flux-runtime-info
+

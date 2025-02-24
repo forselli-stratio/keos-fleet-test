@@ -19,7 +19,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m0s
-  path: ./clusters/eosdev2
+  path: ./clusters/eosdev2/base
   prune: true
   sourceRef:
     kind: GitRepository
