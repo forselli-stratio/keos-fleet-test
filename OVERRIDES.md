@@ -56,7 +56,7 @@ spec:
 
 ```
 mkdir -p clusters/eosdev2/overrides/apps
-cp -r domain/apps/components/postgres clusters/eosdev2/overrides/apps
+cp -r domain/apps/talk-to-your-data/components/postgres clusters/eosdev2/override/apps
 ```
 
 1. Modificamos clusters/eosdev2/overrides/apps/postgres/sync.yaml, añadiendo el patch que queramos hacer:
