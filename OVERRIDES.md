@@ -31,6 +31,22 @@ spec:
 cp -r domain/apps/talk-to-your-data/components/postgres clusters/eosdev2/override/apps
 ```
 
+1. Editamos la label del fichero kustomization clusters/eosdev2/override/apps/postgres/kustomization.yaml
+
+```
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: stratio-datastores
+resources:
+  - rbac.yaml
+  - namespace.yaml
+  - sync.yaml
+labels:
+  - pairs:
+      toolkit.fluxcd.io/domain: apps
+      toolkit.fluxcd.io/component: postgres-override
+```
+
 1. Modificamos clusters/eosdev2/overrides/apps/postgres/sync.yaml, añadiendo el patch que queramos hacer:
 
 ```
