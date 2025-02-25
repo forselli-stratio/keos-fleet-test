@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: 0X-gosec-helm-chart-flux-override-values
+  name: 02-gosec-helm-chart-override-values
 data:
   values.yaml: |-
     ---
     gosec-authz:
       config:
-        CACHE_ENABLED: "false"
+        CACHE_ENABLED: "true"
         DYPLON_CACHE_ENABLED: "false"
     gosec-services-daas:
       config:
