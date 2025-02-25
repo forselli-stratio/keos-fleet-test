@@ -40,6 +40,15 @@ spec:
     substituteFrom:
       - kind: ConfigMap
         name: flux-runtime-info
+  patches:
+    - patch: |
+        $patch: delete
+        apiVersion: all
+        kind: all
+        metadata:
+          name: all
+      target:
+        labelSelector: toolkit.fluxcd.io/component=postgres
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
