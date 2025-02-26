@@ -1,6 +1,10 @@
 # OVERRIDES
 
+## Version de un artefacto
+
 ## Chart de Helm gestionada por flux
+
+1.
 
 ## CR gestionado por flux
 

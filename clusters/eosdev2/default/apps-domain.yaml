@@ -10,7 +10,7 @@ spec:
     - name: flux-system-services-domain-components-override
   interval: 5m
   retryInterval: 3m
-  path: ./domain/apps/talk-to-your-data/tenant
+  path: ./domain/apps/${STRATIO_USE_CASE}/tenant
   prune: true
   sourceRef:
     kind: GitRepository
@@ -31,7 +31,7 @@ spec:
     - name: flux-apps-domain-tenant
   interval: 5m
   retryInterval: 3m
-  path: ./domain/apps/talk-to-your-data/components
+  path: ./domain/apps/${STRATIO_USE_CASE}/components
   prune: true
   sourceRef:
     kind: GitRepository
