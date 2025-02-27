@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: 02-gosec-helm-chart-override-values
+  namespace: keos-core
+data:
+  values.yaml: |-
+    ---
+    gosec-authz:
+      config:
+        CACHE_ENABLED: "true"
+        DYPLON_CACHE_ENABLED: "false"
+    gosec-services-daas:
+      config:
+        CACHE_ENABLED: "false"
+    gosec-management-baas:
+      config:
+        SAAS_ENABLED: "true"
+    gosec-identities-daas:
+      config:
+        MAIL_URL: "https://${CLUSTER_NAME}.${CLUSTER_DOMAIN}"
+        GET_USER_CERTIFICATE_CN: "gosec-management-baas,tenant-operator.keos-core"
