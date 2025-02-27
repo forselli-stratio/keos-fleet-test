@@ -52,7 +52,7 @@ spec:
     - name: flux-apps-domain-tenant
   interval: 5m
   retryInterval: 3m
-  path: ./clusters/eosdev2/override/apps
+  path: ./clusters/${CLUSTER_NAME}/override/apps
   prune: true
   sourceRef:
     kind: GitRepository

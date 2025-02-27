@@ -1,10 +1,6 @@
 # OVERRIDES
 
-## Version de un artefacto
-
-## Chart de Helm gestionada por flux
-
-1.
+## Chart de Helm gestionado por flux
 
 ## CR gestionado por flux
 
@@ -29,7 +25,7 @@ spec:
         labelSelector: toolkit.fluxcd.io/component=postgres
 ```
 
-1. Copiamos el despliegue en clusters/eosdev2/overrides/apps
+1. Copiamos el despliegue a editar en clusters/eosdev2/overrides/apps
 
 ```
 cp -r domain/apps/talk-to-your-data/components/postgres clusters/eosdev2/override/apps
@@ -70,4 +66,3 @@ spec:
         name: psql
         namespace: stratio-datastores
 ```
-

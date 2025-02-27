@@ -1,21 +1,4 @@
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: flux-runtime-info
-  namespace: flux-system
-  labels:
-    toolkit.fluxcd.io/runtime: "true"
-  annotations:
-    kustomize.toolkit.fluxcd.io/ssa: "Merge"
-    replicator.v1.mittwald.de/replicate-to: ".*"
-data:
-  STRATIO_USE_CASE: "talk-to-your-data"
-  STRATIO_SIZE: "small"
-  GIT_BRANCH: "main"
-  CLUSTER_NAME: "admin"
-  CLUSTER_DOMAIN: "k8s.eosdev2.labs.stratio.com"
----
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
