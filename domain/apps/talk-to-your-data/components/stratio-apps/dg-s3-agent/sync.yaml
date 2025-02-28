@@ -19,6 +19,10 @@ spec:
     substituteFrom:
       - kind: ConfigMap
         name: flux-runtime-info
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-gpg
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
