@@ -6,6 +6,7 @@ resources:
   - rbac.yaml
   - git.yaml
   - postgres
+  - dg-s3-agent
 labels:
   - pairs:
       toolkit.fluxcd.io/domain: apps

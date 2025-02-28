@@ -6,7 +6,6 @@ resources:
   - rbac.yaml
   - git.yaml
   - nginx-connectors
-  - dg-s3-agent
 labels:
   - pairs:
       toolkit.fluxcd.io/domain: apps
