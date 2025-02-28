@@ -2,6 +2,18 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
+  name: flux-system
+spec:
+  interval: 1m0s
+  ref:
+    branch: ${GIT_BRANCH}
+  secretRef:
+    name: flux-system
+  url: https://github.com/forselli-stratio/keos-fleet-test.git
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
   name: flux-apps
 spec:
   interval: 1m
