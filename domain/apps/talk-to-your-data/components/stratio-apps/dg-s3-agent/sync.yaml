@@ -2,35 +2,8 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: flux-dg-s3-agent-secret
-spec:
-  serviceAccountName: flux-apps
-  interval: 5m
-  retryInterval: 3m
-  path: ./clusters/${CLUSTER_NAME}/secrets/dg-s3-agent
-  targetNamespace: stratio-apps
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  timeout: 15m
-  wait: true
-  postBuild:
-    substituteFrom:
-      - kind: ConfigMap
-        name: flux-runtime-info
-  decryption:
-    provider: sops
-    secretRef:
-      name: sops-gpg
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
   name: flux-dg-s3-agent
 spec:
-  dependsOn:
-    - name: flux-dg-s3-agent-secret
   serviceAccountName: flux-apps
   interval: 5m
   retryInterval: 3m
