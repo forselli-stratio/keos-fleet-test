@@ -8,6 +8,7 @@ spec:
   interval: 5m
   retryInterval: 3m
   path: ./clusters/${CLUSTER_NAME}/secrets/dg-s3-agent
+  targetNamespace: stratio-apps
   prune: true
   sourceRef:
     kind: GitRepository
