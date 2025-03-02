@@ -2,13 +2,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: stratio-datastores
 resources:
-  - namespace.yaml
-  - rbac.yaml
-  - git.yaml
-  - postgres
-  - pgbouncer
-  - pg-gosec-agent
-  - dg-s3-agent
+  - sync.yaml
 labels:
   - pairs:
       toolkit.fluxcd.io/domain: apps
+      toolkit.fluxcd.io/component: pg-gosec-agent
