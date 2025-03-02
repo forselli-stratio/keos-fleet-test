@@ -2,12 +2,12 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: flux-pg-gosec-agent
+  name: flux-postgres-agent
 spec:
   serviceAccountName: flux-apps
   interval: 5m
   retryInterval: 3m
-  path: ./components/pg-gosec-agent/${STRATIO_SIZE}
+  path: ./components/postgres-agent/${STRATIO_SIZE}
   prune: true
   sourceRef:
     kind: GitRepository

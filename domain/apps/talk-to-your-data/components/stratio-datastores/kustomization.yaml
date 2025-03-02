@@ -7,7 +7,7 @@ resources:
   - git.yaml
   - postgres
   - pgbouncer
-  - pg-gosec-agent
+  - postgres-agent
   - dg-s3-agent
 labels:
   - pairs:
