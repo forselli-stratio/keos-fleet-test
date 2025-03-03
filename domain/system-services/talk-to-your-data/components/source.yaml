@@ -1,7 +1,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
-  name: flux-system-services
+  name: keos-system-services
 spec:
   interval: 1m
   ref:

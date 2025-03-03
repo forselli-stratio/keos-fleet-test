@@ -221,7 +221,7 @@ and `d1-apps` repositories, and to use the `staging` overlay for all components:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: flux-runtime-info
+  name: keos-runtime-info
   namespace: flux-system
   labels:
     toolkit.fluxcd.io/runtime: "true"
@@ -234,10 +234,10 @@ data:
   CLUSTER_DOMAIN: "preview1.example.com"
 ```
 
-The `flux-runtime-info` ConfigMap is propagated to all namespaces in a cluster by a Kyverno policy,
+The `keos-runtime-info` ConfigMap is propagated to all namespaces in a cluster by a Kyverno policy,
 and is used by all Flux Kustomizations to perform substitutions when reconciling the components.
 
-The platform team can extend the `flux-runtime-info` ConfigMap with additional fields such as
+The platform team can extend the `keos-runtime-info` ConfigMap with additional fields such as
 cluster region, cloud provider ID, etc.
 
 ## Onboarding tenants
