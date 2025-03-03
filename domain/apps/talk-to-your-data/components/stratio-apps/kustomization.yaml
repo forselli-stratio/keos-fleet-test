@@ -4,7 +4,6 @@ namespace: stratio-apps
 resources:
   - namespace.yaml
   - rbac.yaml
-  - git.yaml
   - nginx-connectors
 labels:
   - pairs:

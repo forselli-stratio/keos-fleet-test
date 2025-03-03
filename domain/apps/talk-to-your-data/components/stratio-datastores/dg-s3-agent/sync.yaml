@@ -13,6 +13,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: keos-fleet
+    namespace: flux-system
   decryption:
     provider: sops
     secretRef:
@@ -33,6 +34,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: keos-apps
+    namespace: flux-system
   timeout: 15m
   wait: true
   postBuild:

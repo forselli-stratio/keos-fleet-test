@@ -4,7 +4,6 @@ namespace: stratio-datastores
 resources:
   - namespace.yaml
   - rbac.yaml
-  - git.yaml
   - postgres
   - pgbouncer
   - postgres-agent

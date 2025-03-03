@@ -2,7 +2,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: apps-tenant
+  name: apps-prerequisites
   namespace: flux-system
 spec:
   serviceAccountName: kustomize-controller
@@ -10,7 +10,7 @@ spec:
     - name: system-services-components-override
   interval: 5m
   retryInterval: 3m
-  path: ./domain/apps/${STRATIO_USE_CASE}/tenant
+  path: ./domain/apps/${STRATIO_USE_CASE}/prerequisites
   prune: true
   sourceRef:
     kind: GitRepository
@@ -28,7 +28,7 @@ metadata:
 spec:
   serviceAccountName: kustomize-controller
   dependsOn:
-    - name: apps-tenant
+    - name: apps-prerequisites
   interval: 5m
   retryInterval: 3m
   path: ./domain/apps/${STRATIO_USE_CASE}/components
@@ -49,7 +49,7 @@ metadata:
 spec:
   serviceAccountName: kustomize-controller
   dependsOn:
-    - name: apps-tenant
+    - name: apps-prerequisites
   interval: 5m
   retryInterval: 3m
   path: ./clusters/${CLUSTER_NAME}/override/apps

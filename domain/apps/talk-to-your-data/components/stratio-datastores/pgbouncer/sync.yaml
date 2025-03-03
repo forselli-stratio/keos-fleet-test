@@ -13,6 +13,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: keos-apps
+    namespace: flux-system
   timeout: 15m
   wait: true
   postBuild:
