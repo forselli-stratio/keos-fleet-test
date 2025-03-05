@@ -14,10 +14,6 @@ spec:
     kind: GitRepository
     name: keos-fleet
     namespace: flux-system
-  decryption:
-    provider: sops
-    secretRef:
-      name: sops-gpg
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
