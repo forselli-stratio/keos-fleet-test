@@ -14,4 +14,4 @@ data:
   STRATIO_SIZE: "small"
   GIT_BRANCH: "main"
   CLUSTER_NAME: "s-864321281213"
-  CLUSTER_DOMAIN: "k8s.s-864321281213.labs.stratio.com"
+  CLUSTER_DOMAIN: "aws-saas.stratio.com"
