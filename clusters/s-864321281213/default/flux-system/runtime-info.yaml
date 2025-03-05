@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keos-runtime-info
+  namespace: flux-system
+  labels:
+    toolkit.fluxcd.io/runtime: "true"
+  annotations:
+    kustomize.toolkit.fluxcd.io/ssa: "Merge"
+    replicator.v1.mittwald.de/replicate-to: ".*"
+data:
+  STRATIO_USE_CASE: "talk-to-your-data"
+  STRATIO_SIZE: "small"
+  GIT_BRANCH: "main"
+  CLUSTER_NAME: "s-864321281213"
+  CLUSTER_DOMAIN: "k8s.s-864321281213.labs.stratio.com"
