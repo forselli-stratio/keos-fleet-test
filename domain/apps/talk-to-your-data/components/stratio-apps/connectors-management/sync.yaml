@@ -2,12 +2,12 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: apps-nginx-connectors
+  name: apps-connectors-management
 spec:
   serviceAccountName: flux-apps
   interval: 5m
   retryInterval: 3m
-  path: ./components/nginx-connectors/${STRATIO_SIZE}
+  path: ./components/connectors-management/${STRATIO_SIZE}
   prune: true
   sourceRef:
     kind: GitRepository

@@ -4,7 +4,7 @@ namespace: stratio-apps
 resources:
   - namespace.yaml
   - rbac.yaml
-  - nginx-connectors
+  - connectors-management
 labels:
   - pairs:
       toolkit.fluxcd.io/domain: apps

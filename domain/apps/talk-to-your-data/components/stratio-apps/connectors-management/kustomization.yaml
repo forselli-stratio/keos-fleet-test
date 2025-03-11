@@ -6,4 +6,4 @@ resources:
 labels:
   - pairs:
       toolkit.fluxcd.io/domain: apps
-      toolkit.fluxcd.io/component: nginx-connectors
+      toolkit.fluxcd.io/component: connectors-management
