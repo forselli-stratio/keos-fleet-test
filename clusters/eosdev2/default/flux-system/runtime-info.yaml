@@ -15,7 +15,7 @@ data:
   GIT_BRANCH: "main"
   CLUSTER_NAME: "eosdev2"
   CLUSTER_DOMAIN: "k8s.eosdev2.labs.stratio.com"
-  CONTAINER_REGISTRY_TYPE: "generic"
+  CONTAINER_REGISTRY_TYPE: "default"
   CONTAINER_REGISTRY_URL: "qa.int.stratio.com"
   CONTAINER_REGISTRY_IMAGES_REPOSITORY_PREFIX: ""
   CONTAINER_REGISTRY_HELM_CHARTS_REPOSITORY_PREFIX: "/repository/helm-all"
