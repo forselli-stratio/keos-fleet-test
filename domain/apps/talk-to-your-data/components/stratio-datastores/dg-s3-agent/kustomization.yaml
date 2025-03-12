@@ -7,3 +7,4 @@ labels:
   - pairs:
       toolkit.fluxcd.io/domain: apps
       toolkit.fluxcd.io/component: dg-s3-agent
+      app.kubernetes.io/sops-secret-provided: ${SOPS_SECRET_PROVIDED}
