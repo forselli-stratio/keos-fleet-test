@@ -25,6 +25,8 @@ spec:
   serviceAccountName: flux-apps
   dependsOn:
     - name: apps-dg-s3-agent-secrets
+    - name: apps-connectors-management
+      namespace: stratio-apps
   interval: 5m
   retryInterval: 3m
   path: ./components/dg-s3-agent/${STRATIO_SIZE}
