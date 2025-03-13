@@ -1,0 +1,30 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: keos-fleet
+  namespace: flux-system
+spec:
+  interval: 1m0s
+  ref:
+    branch: main
+  secretRef:
+    name: flux-system
+  url: https://github.com/forselli-stratio/keos-fleet-test.git
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: default
+  namespace: flux-system
+spec:
+  interval: 5m0s
+  path: ./clusters/s-748816544128/default
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: keos-fleet
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: keos-runtime-info
