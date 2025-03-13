@@ -29,8 +29,6 @@ flowchart LR
 
 A((keos-system-services)) --> C
 B((keos-apps)) --> C(((keos-fleet)))
-C --> D(Flux \nsync main branch)
-D --> E[Staging cluster]
 C--> G(Flux \nsync prod branch)
 G --> H[Production-A]
 G --> I[Production-B]
