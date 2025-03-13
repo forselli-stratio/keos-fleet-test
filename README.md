@@ -27,8 +27,8 @@ and **cluster admin** rights to all clusters in the fleet to be able to perform 
 ```mermaid
 flowchart LR
 
-A((Infra Repo)) --> C
-B((Apps Repo)) --> C(((Fleet Repo)))
+A((keos-system-services)) --> C
+B((keos-apps)) --> C(((keos-fleet)))
 C --> D(Flux \nsync main branch)
 D --> E[Staging cluster]
 C--> G(Flux \nsync prod branch)
