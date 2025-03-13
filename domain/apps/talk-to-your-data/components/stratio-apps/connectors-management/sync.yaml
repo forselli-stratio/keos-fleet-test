@@ -5,7 +5,7 @@ metadata:
   name: apps-connectors-management
 spec:
   serviceAccountName: flux-apps
-  interval: 5m
+  interval: 1m
   retryInterval: 3m
   path: ./components/connectors-management/${STRATIO_SIZE}
   prune: true

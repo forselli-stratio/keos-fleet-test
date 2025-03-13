@@ -4,7 +4,7 @@ metadata:
   name: apps-postgres
 spec:
   serviceAccountName: flux-apps
-  interval: 5m
+  interval: 1m
   retryInterval: 3m
   path: ./components/postgres/${STRATIO_SIZE}
   prune: true

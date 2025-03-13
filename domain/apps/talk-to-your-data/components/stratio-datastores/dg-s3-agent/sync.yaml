@@ -6,8 +6,8 @@ metadata:
 spec:
   serviceAccountName: flux-apps
   targetNamespace: stratio-datastores
-  interval: 5m
-  retryInterval: 3m
+  interval: 1m
+  retryInterval: 5m
   path: ./clusters/${CLUSTER_NAME}/secrets/dg-s3-agent
   prune: true
   sourceRef:
@@ -27,8 +27,8 @@ spec:
     - name: apps-dg-s3-agent-secrets
     - name: apps-connectors-management
       namespace: stratio-apps
-  interval: 5m
-  retryInterval: 3m
+  interval: 1m
+  retryInterval: 5m
   path: ./components/dg-s3-agent/${STRATIO_SIZE}
   prune: true
   sourceRef:

@@ -5,7 +5,7 @@ metadata:
   name: system-services-stratio-panel-ui-configs
 spec:
   serviceAccountName: kustomize-controller
-  interval: 5m
+  interval: 1m
   retryInterval: 2m
   timeout: 5m
   prune: true
