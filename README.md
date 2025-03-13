@@ -29,7 +29,7 @@ flowchart LR
 
 A((keos-system-services)) --> C
 B((keos-apps)) --> C(((keos-fleet)))
-C--> G(Flux \nsync prod branch)
+C--> G(Flux sync main branch)
 G --> H[Production-A]
 G --> I[Production-B]
 G --> J[Production-C]
