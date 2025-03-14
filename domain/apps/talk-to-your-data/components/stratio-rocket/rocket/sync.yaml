@@ -8,6 +8,14 @@ spec:
   dependsOn:
     - name: apps-pgbouncer
       namespace: stratio-datastores
+    - name: apps-virtualizer
+      namespace: stratio-apps
+    - name: apps-dg-s3-agent
+      namespace: stratio-datastores
+    - name: apps-genai-gateway
+      namespace: stratio-genai
+    - name: apps-genai-api
+      namespace: stratio-genai
   interval: 1m
   retryInterval: 3m
   path: ./components/rocket/${STRATIO_SIZE}
