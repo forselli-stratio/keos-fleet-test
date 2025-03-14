@@ -62,20 +62,22 @@ Copy the cluster `_TEMPLATE` folder and replace the placeholders with the desire
 
 ```shell
 export TARGET_DIR="keos-fleet/clusters/<CLUSTER_NAME>"
+export CLUSTER_NAME="mycluster"
 
 cp -r keos-fleet/clusters/_TEMPLATE "$TARGET_DIR"
 
-find "$TARGET_DIR" -type f -exec sed -i "s/_CLUSTER_NAME/<CLUSTER_NAME>/g" {} +
-find "$TARGET_DIR" -type f -exec sed -i "s/_STRATIO_SIZE/S/g" {} +
-find "$TARGET_DIR" -type f -exec sed -i "s/_GIT_BRANCH/main/g" {} +
-find "$TARGET_DIR" -type f -exec sed -i "s/_CLUSTER_DOMAIN/k8s.eosdev2.labs.stratio.com/g" {} +
-find "$TARGET_DIR" -type f -exec sed -i "s/_CONTAINER_REGISTRY_URL/qa.int.stratio.com:11443/g" {} +
-find "$TARGET_DIR" -type f -exec sed -i "s/_CONTAINER_REGISTRY_REPOSITORY_PREFIX//g" {} +
-find "$TARGET_DIR" -type f -exec sed -i "s/_HELM_REGISTRY_PROVIDER/generic/g" {} +
-find "$TARGET_DIR" -type f -exec sed -i "s/_HELM_REGISTRY_TYPE/default/g" {} +
-find "$TARGET_DIR" -type f -exec sed -i "s/_HELM_REGISTRY_URL/http:\/\/qa.int.stratio.com/g" {} +
-find "$TARGET_DIR" -type f -exec sed -i "s/_HELM_REGISTRY_REPOSITORY_PREFIX/\/repository/helm-all/g" {} +
-find "$TARGET_DIR" -type f -exec sed -i "s/_SOPS_SECRET_PROVIDED/true/g" {} +
+find "$TARGET_DIR" -type f -exec sed -i \
+    -e "s/_CLUSTER_NAME/${CLUSTER_NAME}$/g" \
+    -e "s/_STRATIO_SIZE/S/g" \
+    -e "s/_GIT_BRANCH/main/g" \
+    -e "s/_CLUSTER_DOMAIN/k8s.eosdev2.labs.stratio.com/g" \
+    -e "s/_CONTAINER_REGISTRY_URL/qa.int.stratio.com:11443/g" \
+    -e "s/_CONTAINER_REGISTRY_REPOSITORY_PREFIX//g" \
+    -e "s/_HELM_REGISTRY_PROVIDER/generic/g" \
+    -e "s/_HELM_REGISTRY_TYPE/default/g" \
+    -e "s/_HELM_REGISTRY_URL/http:\/\/qa.int.stratio.com/g" \
+    -e "s/_HELM_REGISTRY_REPOSITORY_PREFIX/\/repository\/helm-all/g" \
+    -e "s/_SOPS_SECRET_PROVIDED/true/g" {} +
 ```
 
 Commit and push the changes to keos-fleet repository.

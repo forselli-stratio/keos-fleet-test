@@ -24,7 +24,7 @@ The teams that manages this repository must have **cluster admin** rights to all
 flowchart LR
 
 A((keos-system-services)) --> C
-B((keos-apps           )) --> C(((keos-fleet)))
+B((keos-apps)) --> C(((keos-fleet)))
 C--> G(Flux sync main branch)
 G --> H[Production-A]
 G --> I[Production-B]
@@ -54,77 +54,11 @@ This token will be stored in all clusters to authenticate with GitHub to pull th
 
 ## Bootstrap Procedure
 
-The bootstrap procedure is a one-time operation that sets up the Flux controllers on the cluster, and
-configures the delivery of platform components and applications.
+The bootstrap procedure is a one-time operation that sets up the Flux controllers on the cluster, and configures the delivery of platform components and applications.
 
 After bootstrap, Flux will monitor the repository for changes and will reconcile itself from the Kubernetes manifests in the repository.
 
-### Bootstrap a cluster
-
-Make sure to set the default context in your kubeconfig to your staging cluster, then create the prerequisites:
-
-```shell
-export FLUX_GITHUB_USER=$(echo 'flux-bot-stratio' | base64 -w0)
-export FLUX_GITHUB_PAT=$(echo -n 'github_pat_xxx' | base64 -w0)
-cat <<EOF | kubectl apply -f -
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: flux-system
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: kustomize-controller
-  namespace: flux-system
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: cluster-reconciler-flux-system
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
-subjects:
-- kind: ServiceAccount
-  name: kustomize-controller
-  namespace: flux-system
----
-apiVersion: v1
-kind: Secret
-metadata:
-  annotations:
-    replicator.v1.mittwald.de/replicate-to: .*
-  name: flux-system
-  namespace: flux-system
-data:
-  username: ${FLUX_GITHUB_USER}
-  password: ${FLUX_GITHUB_PAT}
-type: Opaque
-EOF
-```
-
-Copy the cluster `_TEMPLATE` folder and replace the placeholders in the runtime configmap with the desired values:
-
-```shell
-export TARGET_DIR="keos-fleet/clusters/<CLUSTER_NAME>"
-
-cp -r keos-fleet/clusters/_TEMPLATE "$TARGET_DIR"
-
-find "$TARGET_DIR" -type f -exec sed -i "s/_CLUSTER_NAME/<CLUSTER_NAME>/g" {} +
-find "$TARGET_DIR" -type f -exec sed -i "s/_STRATIO_SIZE/S/g" {} +
-find "$TARGET_DIR" -type f -exec sed -i "s/_GIT_BRANCH/main/g" {} +
-find "$TARGET_DIR" -type f -exec sed -i "s/_CLUSTER_DOMAIN/k8s.eosdev2.labs.stratio.com/g" {} +
-find "$TARGET_DIR" -type f -exec sed -i "s/_CONTAINER_REGISTRY_URL/qa.int.stratio.com:11443/g" {} +
-find "$TARGET_DIR" -type f -exec sed -i "s/_CONTAINER_REGISTRY_REPOSITORY_PREFIX//g" {} +
-find "$TARGET_DIR" -type f -exec sed -i "s/_HELM_REGISTRY_PROVIDER/generic/g" {} +
-find "$TARGET_DIR" -type f -exec sed -i "s/_HELM_REGISTRY_TYPE/default/g" {} +
-find "$TARGET_DIR" -type f -exec sed -i "s/_HELM_REGISTRY_URL/http:\/\/qa.int.stratio.com/g" {} +
-find "$TARGET_DIR" -type f -exec sed -i "s/_HELM_REGISTRY_REPOSITORY_PREFIX/\/repository/helm-all/g" {} +
-find "$TARGET_DIR" -type f -exec sed -i "s/_SOPS_SECRET_PROVIDED/false/g" {} +
-```
+In AWS Marketplace installations, the bootstrap procedure is executed through the installation. If you want to execute it manually for testing purposes, you can follow the [manual bootstraping procedure](docs/manual-bootstraping.md)
 
 ### Rotate the Flux GitHub PAT
 
@@ -132,11 +66,7 @@ It is recommended to use GitHub fine-grained personal access tokens that expire.
 you should rotate the token by creating a new one and updating the `flux-system` secret in the `flux-system` namespace:
 
 ```shell
-flux create secret git flux-system \
-  --namespace=flux-system \
-  --url=https://github.com \
-  --username=git \
-  --password=$NEW_GITHUB_TOKEN
+kubectl patch secret flux-system -n flux-system --type='merge' -p '{"data":{"password":"<BASE64_ENCODED_PASSWORD>"}}'
 ```
 
 ## Onboarding platform components
