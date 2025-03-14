@@ -6,7 +6,7 @@ metadata:
 spec:
   serviceAccountName: flux-apps
   dependsOn:
-    - name: apps-genai-gateway
+    - name: apps-genai-api
   interval: 1m
   retryInterval: 3m
   path: ./components/genai-ui/${STRATIO_SIZE}

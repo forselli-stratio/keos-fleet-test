@@ -6,8 +6,7 @@ spec:
   serviceAccountName: flux-apps
   dependsOn:
     - name: apps-pgbouncer
-      namespace: stratio-datastores
-    - name: dg-s3-agent
+    - name: apps-dg-s3-agent
   interval: 1m
   retryInterval: 3m
   path: ./components/eureka-agent/${STRATIO_SIZE}

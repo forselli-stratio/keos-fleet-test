@@ -6,7 +6,7 @@ metadata:
 spec:
   serviceAccountName: flux-apps
   dependsOn:
-    - name: apps-postgres
+    - name: apps-pgbouncer
       namespace: stratio-datastores
     - name: apps-virtualizer
   interval: 1m
