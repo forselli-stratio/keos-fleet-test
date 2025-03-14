@@ -23,9 +23,11 @@ The teams that manages this repository must have **cluster admin** rights to all
 ```mermaid
 flowchart LR
 
-A((keos-system-services)) --> C
-B((keos-apps)) --> C(((keos-fleet)))
-C--> G(Flux sync main branch)
+A((System-services Repo)) --> C
+B((Apps Repo)) --> C(((Fleet Repo)))
+C --> D(Flux \nsync staging branch)
+D --> E[Staging cluster]
+C--> G(Flux \nsync main branch)
 G --> H[Production-A]
 G --> I[Production-B]
 G --> J[Production-C]
