@@ -51,7 +51,8 @@ EOF
 Configure secrets decryption with SOPS, follow [this](https://fluxcd.io/flux/guides/mozilla-sops/) procedure to generate a GPG key, then create the following secret and add the annotation to the secret so it is available across namespaces:
 
 ```shell
-gpg --export-secret-keys --armor "my-key-fingerprint" |
+export KEY_FP="my-key-fingerprint"
+gpg --export-secret-keys --armor "${KEY_FP}" |
     kubectl create secret generic sops-gpg \
         --namespace=flux-system \
         --from-file=sops.asc=/dev/stdin
@@ -87,11 +88,11 @@ cat <<EOF >"${TARGET_DIR}"/secrets/.sops.yaml
 creation_rules:
   - path_regex: .*.yaml
     encrypted_regex: ^(data|stringData)$
-    pgp: my-key-fingerprint
+    pgp: ${KEY_FP}
 EOF
 ```
 
-Edit the secret for dg-s3-agent with a valid one and encrypt it using SOPS (follow the ):
+Edit the secret for dg-s3-agent with a valid one and encrypt it using SOPS (follow the [instructions for a provided secret in secrets-operator repo](https://github.com/Stratio/secrets-operator?tab=readme-ov-file#synchronizing-custom-secrets)):
 
 ```shell
 cat <<EOF >"${TARGET_DIR}"/secrets/dg-s3-agent/secret.yaml
