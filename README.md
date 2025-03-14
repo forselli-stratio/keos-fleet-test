@@ -70,55 +70,38 @@ kubectl patch secret flux-system -n flux-system --type='merge' -p '{"data":{"pas
 
 ## Onboarding platform components
 
-The platform team is responsible for onboarding the platform components defined as Flux HelmReleases in the
-[keos-system-services repository](https://github.com/controlplaneio-fluxcd/keos-system-services) and set the dependencies
-between the components.
-
-Platform components are cluster add-ons such as CRD and admission controllers,
-and are reconciled by Flux as the **cluster admin**.
+The platform team is responsible for onboarding the platform components defined in the [keos-system-services repository](https://github.com/Stratio/keos-system-services) and set the dependencies between the components.
 
 To onboard a component from the `keos-system-services` repository, the platform team must add a
-Flux Kustomization to the `tenants/infra/components` directory in the `keos-fleet` repository.
+Flux Kustomization to the `domain/system-services/components` directory in the `keos-fleet` repository.
 
-For example, the `keos-fleet` repository contains the following definitions for the `infra` tenant:
+For example, the `keos-fleet` repository contains the following definitions for the `system-services` domain:
 
 ```shell
-./tenants/infra/components/
-├── admission.yaml
+./domain/system-services/components/
+├── gosec.yaml
 └── monitoring.yaml
 ```
 
-Which configures the reconciliation the `infra` components defined in the `keos-system-services` repository:
+Which configures the reconciliation for the `keos-system-services` components defined in the `keos-system-services` repository:
 
 ```shell
 ./components/
-├── admission
+├── gosec
 │   ├── configs
 │   │   ├── base
-│   │   ├── production
-│   │   └── staging
-│   └── controllers
-│       ├── base
-│       ├── production
-│       └── staging
+│   │   ├── talk-to-your-data
 └── monitoring
-    ├── configs
-    │   ├── base
-    │   ├── production
-    │   └── staging
-    └── controllers
-        ├── base
-        ├── production
-        └── staging
+│   ├── configs
+│   │   ├── base
+│   │   ├── talk-to-your-data
 ```
 
 ### Runtime configuration
 
-In the `clusters/<cluster-name>/runtime-info.yaml` ConfigMaps, the platform team sets which
-configuration overlay to use for all components and from which branch to reconcile the changes.
+In the `clusters/<cluster-name>/runtime-info.yaml` ConfigMaps, the platform team sets which configuration overlay to use for all components and from which branch to reconcile the changes.
 
-For example, the `staging` cluster is configured to reconcile the `main` branch of the `keos-system-services`
-and `keos-apps` repositories, and to use the `staging` overlay for all components:
+For example, the `staging` cluster is configured to reconcile the `main` branch of the `keos-system-services` and `keos-apps` repositories, and to use the `talk-to-your-data` size `S` overlay for all components:
 
 ```yaml
 apiVersion: v1
@@ -131,178 +114,66 @@ metadata:
   annotations:
     kustomize.toolkit.fluxcd.io/ssa: "Merge"
 data:
-  ENVIRONMENT: "staging"
+  STRATIO_USE_CASE: "talk-to-your-data"
+  STRATIO_SIZE: "S"
   GIT_BRANCH: "main"
-  CLUSTER_NAME: "staging-1"
-  CLUSTER_DOMAIN: "preview1.example.com"
+  CLUSTER_NAME: "staging"
+  # ...omitted for brevity
 ```
 
-The `keos-runtime-info` ConfigMap is propagated to all namespaces in a cluster by a Kyverno policy,
-and is used by all Flux Kustomizations to perform substitutions when reconciling the components.
+The `keos-runtime-info` ConfigMap is propagated to all namespaces in a cluster by the `kubernetes-replicator`, and is used by all Flux Kustomizations to perform substitutions when reconciling the components.
 
-The platform team can extend the `keos-runtime-info` ConfigMap with additional fields such as
-cluster region, cloud provider ID, etc.
+The platform team can extend the `keos-runtime-info` ConfigMap with additional fields such as cluster region, cloud provider ID, etc.
 
-## Onboarding tenants
+## Onboarding platform applications
 
-The platform team is responsible for onboarding the applications defined as Flux HelmReleases in the
-[keos-apps repository](https://github.com/controlplaneio-fluxcd/keos-apps) and restricting the access
-to predefined Kubernetes namespaces.
+The platform team is responsible for onboarding the applications defined in the [keos-apps repository](https://github.com/Stratio/keos-apps) and set the dependencies between the components.
 
-### Flux GitHub PAT for tenant components
+For each application use case, the Platform team must define the prerequisites and the components that make up that use case.
 
-Create a GitHub fine-grained personal access token for the Flux bot account with
-the following permissions for the `keos-apps` repository:
 
-- `Administration` -> `Access: Read-only`
-- `Commit statuses` -> `Access: Read and write`
-- `Contents` -> `Access: Read and write`
-- `Metadata` -> `Access: Read-only`
+The directory structure under [domain/apps](https://github.com/Stratio/keos-fleet/tree/main/domain/apps) matches the components defined in the [keos-apps repository](https://github.com/Stratio/keos-apps/components).
 
-After the cluster is bootstrapped, the platform team can onboard tenant applications by creating
-a Kubernetes secret in the `flux-system` namespace with the tenant's GitHub PAT:
+For example, the `keos-fleet` repository contains the following definitions for the `talk-to-your-data` use case:
 
 ```shell
-export APPS_GITHUB_TOKEN=<Flux bot apps PAT>
-
-flux create secret git flux-apps \
-  --namespace=flux-system \
-  --label=toolkit.fluxcd.io/tenant=apps \
-  --url=https://github.com \
-  --username=git \
-  --password=$APPS_GITHUB_TOKEN
+./domain/apps/talk-to-your-data/
+├── components
+│   ├── stratio-apps
+|       ├── connectors-management
+|       ├── kustomization.yaml
+|       ├── namespace.yaml
+|       ├── rbac.yaml
+│   ├── stratio-datastores
+|       ├── dg-s3-agent
+|       ├── pgbouncer
+|       ├── postgres
+|       ├── postgres-agent
+|       ├── kustomization.yaml
+|       ├── namespace.yaml
+|       ├── rbac.yaml
+├── prerequisites
+│   ├── kustomization.yaml
+│   ├── source.yaml
+│   └── tenant.yaml
 ```
 
-The tenant GitHub PAT secret is propagated from the `flux-system` namespace to all namespaces
-where the tenant applications are running, using a Kyverno policy. When rotating the tenant GitHub PAT,
-updating the `flux-apps` secret in the `flux-system` namespace will automatically propagate the new token
-to all tenant namespaces labeled with `toolkit.fluxcd.io/tenant: apps`.
-
-### Continuous Delivery for tenant applications
-
-For each namespace belonging to a tenant, the platform team must define the Kubernetes
-namespace, RBAC, Flux GitRepository and Kustomization custom resources under the
-tenant's directory.
-
-The directory structure under
-[tenants/apps](https://github.com/controlplaneio-fluxcd/keos-fleet/tree/main/tenants/apps)
-matches the components defined in the
-[keos-apps repository](https://github.com/controlplaneio-fluxcd/keos-apps/components).
-
-For example, the `keos-fleet` repository contains the following definitions for the `backend` namespace:
+Which configures the reconciliation for the `talk-to-your-data` components defined in the [keos-apps repository](https://github.com/Stratio/keos-apps/components):
 
 ```shell
-./tenants/apps/components/backend/
-├── kustomization.yaml
-├── namespace.yaml
-├── rbac.yaml
-└── sync.yaml
-```
-
-Which configures the reconciliation under a restricted service account for the `backend` components defined in the
-[keos-apps repository](https://github.com/controlplaneio-fluxcd/keos-apps/components/backend):
-
-```shell
-./components/backend/
+./components/connectors-management/
 ├── base
-│   ├── bitnamicharts.yaml
 │   ├── kustomization.yaml
-│   ├── memcached.yaml
-│   └── redis.yaml
-├── production
+│   ├── sync.yaml
+│   └── values.yaml
+├── S
 │   ├── kustomization.yaml
-│   ├── memcached-values.yaml
-│   └── redis-values.yaml
-└── staging
-    ├── kustomization.yaml
-    ├── memcached-values.yaml
-    └── redis-values.yaml
+│   ├── values.yaml
 ```
 
-Changes made by the dev team to the `keos-apps` repository in the `main` branch will
-be automatically reconciled by the Flux controllers running in the staging cluster.
+Changes made by the Platform team to the `keos-apps` repository in the `main` branch will be automatically reconciled by the Flux controllers running in the production cluster fleet.
 
-Changes made by the dev team to the `keos-apps` repository in the `production` branch will
-be automatically reconciled by the Flux controllers running in the production cluster fleet.
-
-The dev team can make any changes inside the namespaces assigned by the platform team, but they
-cannot change any cluster-wide resources or the namespace itself.
-
-### Helm release automation for tenant applications
-
-The staging cluster runs the Flux image automation controllers which automatically
-update the HelmRelease definitions in the `main` branch of the `keos-apps` repository
-based on Flux image polices defined by the dev team.
-
-When a new chart version is pushed to the container registry, and if it matches the semver policy,
-Flux will update the HelmRelease YAML definitions and will push the changes to the `main` branch.
-
-After the changes are reconciled on staging, the dev team can promote the changes
-to the production clusters by merging the `main` branch into the `production` branch of the `keos-apps` repository.
-
-The platform team is responsible for configuring a dedicated Kubernetes namespace for
-the image policies and defining the Flux image update automation custom resources in the `keos-fleet` repository:
-
-```shell
-./tenants/apps/update/
-├── automation.yaml
-├── kustomization.yaml
-├── namespace.yaml
-├── rbac.yaml
-└── sync.yaml
-```
-
-The above configuration will reconcile the image polices define in the
-[keos-apps repository](https://github.com/controlplaneio-fluxcd/keos-apps/components):
-
-```shell
-./update/
-├── backend-memcached.yaml
-├── backend-redis.yaml
-├── frontend-podinfo.yaml
-└── kustomization.yaml
-```
-
-The dev team has full control over the image policies, and they are responsible for
-defining the image update automation rules for their applications.
-The platform team is responsible for setting up the infrastructure for running the
-Flux image automation controllers and their access to the dev team repository.
-
-## Bootstrap the production clusters
-
-Make sure to set the default context in your kubeconfig to your production cluster, then run bootstrap with:
-
-```shell
-export GITHUB_TOKEN=<Flux platform PAT>
-
-flux bootstrap github \
-  --registry=ghcr.io/fluxcd \
-  --owner=controlplaneio-fluxcd \
-  --repository=keos-fleet \
-  --branch=main \
-  --token-auth \
-  --path=clusters/prod-eu
-```
-
-After bootstrap, Flux will provision the production cluster with add-ons from `production`
-branch of the `keos-system-services` repository.
-
-To kick off the reconciliation of the tenant applications, the platform team must create the
-`flux-apps` secret in the `flux-system` namespace with the tenant's GitHub PAT:
-
-```shell
-export APPS_GITHUB_TOKEN=<Flux apps PAT>
-
-flux create secret git flux-apps \
-  --namespace=flux-system \
-  --label=toolkit.fluxcd.io/tenant=apps \
-  --url=https://github.com \
-  --username=git \
-  --password=$APPS_GITHUB_TOKEN
-```
-
-After the `keos-system-services` repository reconciles, Flux will proceed to reconcile the tenant applications
-from the `production` branch of the `keos-apps` repository.
+Changes made by the Platform team to the `keos-apps` repository in the `staging` branch will be automatically reconciled by the Flux controllers running in the staging cluster fleet.
 
 ### Monitoring
 
@@ -310,45 +181,5 @@ To monitor the reconciliation process, run the following commands in different t
 
 ```shell
 watch flux get kustomizations --all-namespaces
-watch kubectl get pods --all-namespaces
 ```
 
-To list all the managed resources by Flux, run:
-
-```shell
-flux tree ks flux-system
-```
-
-To view the Flux events with the reconciliation status, run:
-
-```shell
-flux events -A
-```
-
-### Grafana dashboards
-
-To access Grafana, start port forward in a separate shell:
-
-```shell
-kubectl -n monitoring port-forward svc/kube-prometheus-stack-grafana  3000:80
-```
-
-Navigate to http://localhost:3000 in your browser and login with user `admin` and password `flux`.
-
-Flux dashboards:
-
-- Reconciliation stats: `http://localhost:3000/d/flux-cluster/flux-cluster-stats`
-- Controller stats: `http://localhost:3000/d/flux-control-plane/flux-control-plane`
-
-### KEOS Integration
-
-export GITHUB_TOKEN=xxx
-
-kubectl create secret generic flux-system \
---namespace kube-system \
-  --from-literal=username=forselli-stratio \
-  --from-literal=password=$GITHUB_TOKEN
-
-kubectl annotate secret flux-system --namespace kube-system replicator.v1.mittwald.de/replicate-to=".*"
-
-kubectl kustomize clusters/<CLUSTER_NAME>/flux-system | kubectl apply -f -

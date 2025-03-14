@@ -90,7 +90,10 @@ creation_rules:
     encrypted_regex: ^(data|stringData)$
     pgp: ${KEY_FP}
 EOF
+gpg -a --export $KEY_FP > "${TARGET_DIR}"/secrets/.sops.pub.asc
 ```
+
+
 
 Edit the secret for dg-s3-agent with a valid one and encrypt it using SOPS (follow the [instructions for a provided secret in secrets-operator repo](https://github.com/Stratio/secrets-operator?tab=readme-ov-file#synchronizing-custom-secrets)):
 
