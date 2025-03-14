@@ -68,7 +68,7 @@ export TARGET_DIR="clusters/${CLUSTER_NAME}>"
 cp -r clusters/_TEMPLATE "$TARGET_DIR"
 
 find "$TARGET_DIR" -type f -exec sed -i \
-    -e "s/_CLUSTER_NAME/${CLUSTER_NAME}$/g" \
+    -e "s/_CLUSTER_NAME/${CLUSTER_NAME}/g" \
     -e "s/_STRATIO_SIZE/S/g" \
     -e "s/_GIT_BRANCH/main/g" \
     -e "s/_CLUSTER_DOMAIN/k8s.eosdev2.labs.stratio.com/g" \
