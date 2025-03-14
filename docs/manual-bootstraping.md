@@ -61,10 +61,10 @@ kubectl annotate secret sops-gpg --namespace flux-system replicator.v1.mittwald.
 Copy the cluster `_TEMPLATE` folder and replace the placeholders with the desired values:
 
 ```shell
-export TARGET_DIR="keos-fleet/clusters/<CLUSTER_NAME>"
+export TARGET_DIR="clusters/<CLUSTER_NAME>"
 export CLUSTER_NAME="mycluster"
 
-cp -r keos-fleet/clusters/_TEMPLATE "$TARGET_DIR"
+cp -r clusters/_TEMPLATE "$TARGET_DIR"
 
 find "$TARGET_DIR" -type f -exec sed -i \
     -e "s/_CLUSTER_NAME/${CLUSTER_NAME}$/g" \
@@ -78,6 +78,32 @@ find "$TARGET_DIR" -type f -exec sed -i \
     -e "s/_HELM_REGISTRY_URL/http:\/\/qa.int.stratio.com/g" \
     -e "s/_HELM_REGISTRY_REPOSITORY_PREFIX/\/repository\/helm-all/g" \
     -e "s/_SOPS_SECRET_PROVIDED/true/g" {} +
+```
+
+Configure SOPS:
+
+```shell
+cat <<EOF >"${TARGET_DIR}"/secrets/.sops.yaml
+creation_rules:
+  - path_regex: .*.yaml
+    encrypted_regex: ^(data|stringData)$
+    pgp: my-key-fingerprint
+EOF
+```
+
+Edit the secret for dg-s3-agent with a valid one and encrypt it using SOPS (follow the ):
+
+```shell
+cat <<EOF >"${TARGET_DIR}"/secrets/dg-s3-agent/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+    name: customer-s3-secret
+data:
+    bundle: $DG_S3_AGENT_SECRET_BUNDLE
+EOF
+
+sops --encrypt --config "${TARGET_DIR}"/secrets/.sops.yaml --in-place "${TARGET_DIR}"/secrets/dg-s3-agent/secret.yaml
 ```
 
 Commit and push the changes to keos-fleet repository.

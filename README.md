@@ -62,8 +62,7 @@ In AWS Marketplace installations, the bootstrap procedure is executed through th
 
 ### Rotate the Flux GitHub PAT
 
-It is recommended to use GitHub fine-grained personal access tokens that expire. Before the Flux bot token expires,
-you should rotate the token by creating a new one and updating the `flux-system` secret in the `flux-system` namespace:
+It is recommended to use GitHub fine-grained personal access tokens that expire. Before the Flux bot token expires, you should rotate the token by creating a new one and updating the `flux-system` secret in the `flux-system` namespace:
 
 ```shell
 kubectl patch secret flux-system -n flux-system --type='merge' -p '{"data":{"password":"<BASE64_ENCODED_PASSWORD>"}}'
