@@ -1,0 +1,25 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps-discovery
+spec:
+  serviceAccountName: flux-apps
+  dependsOn:
+    - name: apps-postgres
+      namespace: stratio-datastores
+    - name: apps-virtualizer
+  interval: 1m
+  retryInterval: 3m
+  path: ./components/discovery/${STRATIO_SIZE}
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: keos-apps
+    namespace: flux-system
+  timeout: 15m
+  wait: true
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: keos-runtime-info

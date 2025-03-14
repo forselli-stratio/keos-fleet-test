@@ -1,0 +1,23 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps-genai-ui
+spec:
+  serviceAccountName: flux-apps
+  dependsOn:
+    - name: apps-genai-gateway
+  interval: 1m
+  retryInterval: 3m
+  path: ./components/genai-ui/${STRATIO_SIZE}
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: keos-apps
+    namespace: flux-system
+  timeout: 15m
+  wait: true
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: keos-runtime-info

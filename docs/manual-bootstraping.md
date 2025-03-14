@@ -62,8 +62,8 @@ kubectl annotate secret sops-gpg --namespace flux-system replicator.v1.mittwald.
 Copy the cluster `_TEMPLATE` folder and replace the placeholders with the desired values:
 
 ```shell
-export TARGET_DIR="clusters/<CLUSTER_NAME>"
 export CLUSTER_NAME="mycluster"
+export TARGET_DIR="clusters/${CLUSTER_NAME}>"
 
 cp -r clusters/_TEMPLATE "$TARGET_DIR"
 
@@ -92,8 +92,6 @@ creation_rules:
 EOF
 gpg -a --export $KEY_FP > "${TARGET_DIR}"/secrets/.sops.pub.asc
 ```
-
-
 
 Edit the secret for dg-s3-agent with a valid one and encrypt it using SOPS (follow the [instructions for a provided secret in secrets-operator repo](https://github.com/Stratio/secrets-operator?tab=readme-ov-file#synchronizing-custom-secrets)):
 
