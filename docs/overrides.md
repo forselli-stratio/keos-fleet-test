@@ -1,4 +1,4 @@
-# OVERRIDES
+# Overrides
 
 ## Chart de Helm gestionado por flux
 

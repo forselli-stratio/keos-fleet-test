@@ -1,153 +1,129 @@
-# d1-fleet
+# keos-fleet
 
 > [!NOTE]
-> This repository is part of the reference architecture for the
-> [ControlPlane Enterprise for Flux CD](https://github.com/controlplaneio-fluxcd/distribution).
+> This repository is based on the `d1` reference architecture for the
+> [ControlPlane Enterprise for Flux CD](https://github.com/controlplaneio-fluxcd/distribution/blob/main/guides/ControlPlane_Flux_D1_Reference_Architecture_Guide.pdf).
 >
 > The `d1` reference architecture comprised of
-> [d1-fleet](https://github.com/controlplaneio-fluxcd/d1-fleet),
-> [d1-infra](https://github.com/controlplaneio-fluxcd/d1-infra) and
-> [d1-apps](https://github.com/controlplaneio-fluxcd/d1-apps)
-> is a set of best practices and production-ready examples for using Flux
-> to manage the continuous delivery of Kubernetes infrastructure and
-> applications on multi-cluster multi-tenant environments.
+> [keos-fleet](https://github.com/Stratio/keos-fleet),
+> [keos-system-services](https://github.com/Stratio/keos-system-services) and
+> [keos-apps](https://github.com/Stratio/keos-apps)
 
 ## Scope and Access Control
 
-This repository is managed by the platform team who are responsible for
+This repository is managed by the platform and operations teams who are responsible for
 the Kubernetes infrastructure and have direct access to the fleet of clusters.
 
-The platform team that manages this repository must have **admin** rights to the `d1-fleet` repository
-and **cluster admin** rights to all clusters in the fleet to be able to perform the following tasks:
+The teams that manages this repository must have **cluster admin** rights to all clusters in the fleet to be able to perform the following tasks:
 
-- Bootstrap Flux with multi-tenancy restrictions on fleet clusters.
-- Configure the delivery of platform components (defined in [d1-infra repository](https://github.com/controlplaneio-fluxcd/d1-infra)).
-- Configure the delivery of applications (defined in [d1-apps repository](https://github.com/controlplaneio-fluxcd/d1-apps)).
+- Deploy Flux on fleet clusters (this is done by default with keos-installer).
+- Configure the delivery of platform components (defined in [keos-system-services repository](https://github.com/Stratio/keos-system-services)).
+- Configure the delivery of applications (defined in [keos-apps repository](https://github.com/Stratio/keos-apps)).
 
 ```mermaid
 flowchart LR
 
 A((keos-system-services)) --> C
-B((keos-apps)) --> C(((keos-fleet)))
+B((keos-apps           )) --> C(((keos-fleet)))
 C--> G(Flux sync main branch)
 G --> H[Production-A]
 G --> I[Production-B]
 G --> J[Production-C]
 ```
 
-## Create a GitHub Account for Flux
+## GitHub Account for Flux
 
-Create a new GitHub account for the Flux bot. This account will be used by the Flux CLI and
-the Flux controllers running on clusters to authenticate with GitHub.
+This account will be used by the Flux controllers running on clusters to authenticate with GitHub. The account is `flux-bot-stratio` and is managed by the Platform team.
 
-Create a GitHub team under your organisation for the bot account and give it the following permissions:
+The `flux-bot-stratio` GitHub account has the following permissions:
 
-- Read and write access to the `d1-fleet` repository (required for cluster bootstrap)
-- Push access to the `main` branch of the `d1-fleet` repository (required for cluster bootstrap)
-- Read and write access to the `d1-infra` and `d1-apps` repositories (required for cluster reconciliation and image automation)
+- Read and write access to the `keos-fleet` repository (required for cluster bootstrap)
+- Push access to the `main` branch of the `keos-fleet` repository (required for cluster bootstrap)
+- Read and write access to the `keos-system-services` and `keos-apps` repositories (required for cluster reconciliation)
 
-### Flux GitHub PAT for platform components
+### Flux GitHub PAT
 
-Create a GitHub fine-grained personal access token for the bot account with
-the following permissions for the `d1-infra`, `d1-apps` and `d1-fleet` repositories:
+The `flux-bot-stratio` GitHub account has a fine-grained personal access token with the following permissions for the `keos-system-services`, `keos-apps` and `keos-fleet` repositories:
 
 - `Administration` -> `Access: Read-only`
 - `Commit statuses` -> `Access: Read and write`
 - `Contents` -> `Access: Read and write`
 - `Metadata` -> `Access: Read-only`
 
-This token will be stored in all clusters to authenticate with GitHub to pull the fleet desired state
-from the `d1-fleet` and `d1-infra` repositories. The token is also used to automate the
-Helm chart updates in the `d1-infra` repository, where the bot account has push access to the main branch.
+This token will be stored in all clusters to authenticate with GitHub to pull the fleet desired state from the `keos-fleet`, `keos-system-services` and `keos-apps` repositories.
 
 ## Bootstrap Procedure
 
 The bootstrap procedure is a one-time operation that sets up the Flux controllers on the cluster, and
 configures the delivery of platform components and applications.
 
-After bootstrap, Flux will monitor the repository for changes and will reconcile itself from
-the Kubernetes manifests pushed by the Flux CLI in the repository. Changes to Flux configuration
-and version upgrades are done by modifying the repository and letting Flux reconcile the changes,
-there is no need to run the bootstrap command again nor connect to the cluster.
+After bootstrap, Flux will monitor the repository for changes and will reconcile itself from the Kubernetes manifests in the repository.
 
-### Bootstrap the staging cluster
+### Bootstrap a cluster
 
-Make sure to set the default context in your kubeconfig to your staging cluster, then run bootstrap with:
+Make sure to set the default context in your kubeconfig to your staging cluster, then create the prerequisites:
 
 ```shell
-export GITHUB_TOKEN=<Flux Bot PAT>
-
-flux bootstrap github \
-  --registry=ghcr.io/fluxcd \
-  --components-extra=image-reflector-controller,image-automation-controller \
-  --owner=controlplaneio-fluxcd \
-  --repository=d1-fleet \
-  --branch=main \
-  --token-auth \
-  --path=clusters/staging
+export FLUX_GITHUB_USER=$(echo 'flux-bot-stratio' | base64 -w0)
+export FLUX_GITHUB_PAT=$(echo -n 'github_pat_xxx' | base64 -w0)
+cat <<EOF | kubectl apply -f -
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: flux-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kustomize-controller
+  namespace: flux-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cluster-reconciler-flux-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: kustomize-controller
+  namespace: flux-system
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    replicator.v1.mittwald.de/replicate-to: .*
+  name: flux-system
+  namespace: flux-system
+data:
+  username: ${FLUX_GITHUB_USER}
+  password: ${FLUX_GITHUB_PAT}
+type: Opaque
+EOF
 ```
 
-The Flux CLI will use the bot PAT to push two commits to the `d1-fleet` repository:
-
-- First commit to create the `clusters/staging/flux-system/gotk-components.yaml` file
-  which contains the flux-system namespace, RBAC, network policies, CRDs and the controller deployments.
-- Second commit to create the `clusters/staging/flux-system/gotk-sync.yaml` file
-  which contains the Flux `GitRepository` and `Kustomization` custom resources for setting up the cluster reconciliation.
-
-This Flux CLI will perform the following actions on the cluster:
-
-- Creates a Kubernetes Secret named `flux-system` in the `flux-system` namespace that contains the bot PAT.
-- Builds the `cluster/staging/flux-system` kustomize overlays with the multi-tenancy patches and
-  applies the generated manifests to the cluster to kick off the reconciliation.
-
-From this point on, the Flux controllers will reconcile the cluster state with the desired state, any changes
-to the `cluster/staging` directory in the `d1-fleet` repository will be automatically applied to the cluster.
-
-### Bootstrap with the enterprise version
-
-When using the [ControlPlane enterprise](https://control-plane.io/enterprise-for-flux-cd/)
-distribution for Flux, you need to create a
-Kubernetes Image Pull Secret for the enterprise registry in the `flux-system` namespace:
+Copy the cluster `_TEMPLATE` folder and replace the placeholders in the runtime configmap with the desired values:
 
 ```shell
-flux create secret oci flux-enterprise-auth \
-  --url=ghcr.io \
-  --username=flux \
-  --password=$FLUX_ENTERPRISE_TOKEN
-```
+export TARGET_DIR="keos-fleet/clusters/<CLUSTER_NAME>"
 
-Then run the bootstrap command by specifying the enterprise registry and the image pull secret:
+cp -r keos-fleet/clusters/_TEMPLATE "$TARGET_DIR"
 
-```shell
-flux bootstrap github \
-  --registry=ghcr.io/controlplaneio-fluxcd/distroless \
-  --image-pull-secret=flux-enterprise-auth \
-  --components-extra=image-reflector-controller,image-automation-controller \
-  --owner=controlplaneio-fluxcd \
-  --repository=d1-fleet \
-  --branch=main \
-  --token-auth \
-  --path=clusters/staging
-```
-
-Another option is to copy the images from the ControlPlane registry to your organization's registry
-and use the `--registry` flag to point to your registry.
-
-Copying an image from the ControlPlane registry to your organization's registry can be done with the following commands:
-
-```shell
- FLUX_CONTROLLERS=(
- "source-controller"
- "kustomize-controller"
- "helm-controller"
- "notification-controller"
- "image-reflector-controller"
- "image-automation-controller"
- )
-
- for controller in "${FLUX_CONTROLLERS[@]}"; do
-   crane copy --all-tags ghcr.io/controlplaneio-fluxcd/distroless/$controller  <your-registry>/$controller
- done
+find "$TARGET_DIR" -type f -exec sed -i "s/_CLUSTER_NAME/<CLUSTER_NAME>/g" {} +
+find "$TARGET_DIR" -type f -exec sed -i "s/_STRATIO_SIZE/S/g" {} +
+find "$TARGET_DIR" -type f -exec sed -i "s/_GIT_BRANCH/main/g" {} +
+find "$TARGET_DIR" -type f -exec sed -i "s/_CLUSTER_DOMAIN/k8s.eosdev2.labs.stratio.com/g" {} +
+find "$TARGET_DIR" -type f -exec sed -i "s/_CONTAINER_REGISTRY_URL/qa.int.stratio.com:11443/g" {} +
+find "$TARGET_DIR" -type f -exec sed -i "s/_CONTAINER_REGISTRY_REPOSITORY_PREFIX//g" {} +
+find "$TARGET_DIR" -type f -exec sed -i "s/_HELM_REGISTRY_PROVIDER/generic/g" {} +
+find "$TARGET_DIR" -type f -exec sed -i "s/_HELM_REGISTRY_TYPE/default/g" {} +
+find "$TARGET_DIR" -type f -exec sed -i "s/_HELM_REGISTRY_URL/http:\/\/qa.int.stratio.com/g" {} +
+find "$TARGET_DIR" -type f -exec sed -i "s/_HELM_REGISTRY_REPOSITORY_PREFIX/\/repository/helm-all/g" {} +
+find "$TARGET_DIR" -type f -exec sed -i "s/_SOPS_SECRET_PROVIDED/false/g" {} +
 ```
 
 ### Rotate the Flux GitHub PAT
@@ -166,16 +142,16 @@ flux create secret git flux-system \
 ## Onboarding platform components
 
 The platform team is responsible for onboarding the platform components defined as Flux HelmReleases in the
-[d1-infra repository](https://github.com/controlplaneio-fluxcd/d1-infra) and set the dependencies
+[keos-system-services repository](https://github.com/controlplaneio-fluxcd/keos-system-services) and set the dependencies
 between the components.
 
 Platform components are cluster add-ons such as CRD and admission controllers,
 and are reconciled by Flux as the **cluster admin**.
 
-To onboard a component from the `d1-infra` repository, the platform team must add a
-Flux Kustomization to the `tenants/infra/components` directory in the `d1-fleet` repository.
+To onboard a component from the `keos-system-services` repository, the platform team must add a
+Flux Kustomization to the `tenants/infra/components` directory in the `keos-fleet` repository.
 
-For example, the `d1-fleet` repository contains the following definitions for the `infra` tenant:
+For example, the `keos-fleet` repository contains the following definitions for the `infra` tenant:
 
 ```shell
 ./tenants/infra/components/
@@ -183,7 +159,7 @@ For example, the `d1-fleet` repository contains the following definitions for th
 └── monitoring.yaml
 ```
 
-Which configures the reconciliation the `infra` components defined in the `d1-infra` repository:
+Which configures the reconciliation the `infra` components defined in the `keos-system-services` repository:
 
 ```shell
 ./components/
@@ -212,8 +188,8 @@ Which configures the reconciliation the `infra` components defined in the `d1-in
 In the `clusters/<cluster-name>/runtime-info.yaml` ConfigMaps, the platform team sets which
 configuration overlay to use for all components and from which branch to reconcile the changes.
 
-For example, the `staging` cluster is configured to reconcile the `main` branch of the `d1-infra`
-and `d1-apps` repositories, and to use the `staging` overlay for all components:
+For example, the `staging` cluster is configured to reconcile the `main` branch of the `keos-system-services`
+and `keos-apps` repositories, and to use the `staging` overlay for all components:
 
 ```yaml
 apiVersion: v1
@@ -241,13 +217,13 @@ cluster region, cloud provider ID, etc.
 ## Onboarding tenants
 
 The platform team is responsible for onboarding the applications defined as Flux HelmReleases in the
-[d1-apps repository](https://github.com/controlplaneio-fluxcd/d1-apps) and restricting the access
+[keos-apps repository](https://github.com/controlplaneio-fluxcd/keos-apps) and restricting the access
 to predefined Kubernetes namespaces.
 
 ### Flux GitHub PAT for tenant components
 
 Create a GitHub fine-grained personal access token for the Flux bot account with
-the following permissions for the `d1-apps` repository:
+the following permissions for the `keos-apps` repository:
 
 - `Administration` -> `Access: Read-only`
 - `Commit statuses` -> `Access: Read and write`
@@ -280,11 +256,11 @@ namespace, RBAC, Flux GitRepository and Kustomization custom resources under the
 tenant's directory.
 
 The directory structure under
-[tenants/apps](https://github.com/controlplaneio-fluxcd/d1-fleet/tree/main/tenants/apps)
+[tenants/apps](https://github.com/controlplaneio-fluxcd/keos-fleet/tree/main/tenants/apps)
 matches the components defined in the
-[d1-apps repository](https://github.com/controlplaneio-fluxcd/d1-apps/components).
+[keos-apps repository](https://github.com/controlplaneio-fluxcd/keos-apps/components).
 
-For example, the `d1-fleet` repository contains the following definitions for the `backend` namespace:
+For example, the `keos-fleet` repository contains the following definitions for the `backend` namespace:
 
 ```shell
 ./tenants/apps/components/backend/
@@ -295,7 +271,7 @@ For example, the `d1-fleet` repository contains the following definitions for th
 ```
 
 Which configures the reconciliation under a restricted service account for the `backend` components defined in the
-[d1-apps repository](https://github.com/controlplaneio-fluxcd/d1-apps/components/backend):
+[keos-apps repository](https://github.com/controlplaneio-fluxcd/keos-apps/components/backend):
 
 ```shell
 ./components/backend/
@@ -314,10 +290,10 @@ Which configures the reconciliation under a restricted service account for the `
     └── redis-values.yaml
 ```
 
-Changes made by the dev team to the `d1-apps` repository in the `main` branch will
+Changes made by the dev team to the `keos-apps` repository in the `main` branch will
 be automatically reconciled by the Flux controllers running in the staging cluster.
 
-Changes made by the dev team to the `d1-apps` repository in the `production` branch will
+Changes made by the dev team to the `keos-apps` repository in the `production` branch will
 be automatically reconciled by the Flux controllers running in the production cluster fleet.
 
 The dev team can make any changes inside the namespaces assigned by the platform team, but they
@@ -326,17 +302,17 @@ cannot change any cluster-wide resources or the namespace itself.
 ### Helm release automation for tenant applications
 
 The staging cluster runs the Flux image automation controllers which automatically
-update the HelmRelease definitions in the `main` branch of the `d1-apps` repository
+update the HelmRelease definitions in the `main` branch of the `keos-apps` repository
 based on Flux image polices defined by the dev team.
 
 When a new chart version is pushed to the container registry, and if it matches the semver policy,
 Flux will update the HelmRelease YAML definitions and will push the changes to the `main` branch.
 
 After the changes are reconciled on staging, the dev team can promote the changes
-to the production clusters by merging the `main` branch into the `production` branch of the `d1-apps` repository.
+to the production clusters by merging the `main` branch into the `production` branch of the `keos-apps` repository.
 
 The platform team is responsible for configuring a dedicated Kubernetes namespace for
-the image policies and defining the Flux image update automation custom resources in the `d1-fleet` repository:
+the image policies and defining the Flux image update automation custom resources in the `keos-fleet` repository:
 
 ```shell
 ./tenants/apps/update/
@@ -348,7 +324,7 @@ the image policies and defining the Flux image update automation custom resource
 ```
 
 The above configuration will reconcile the image polices define in the
-[d1-apps repository](https://github.com/controlplaneio-fluxcd/d1-apps/components):
+[keos-apps repository](https://github.com/controlplaneio-fluxcd/keos-apps/components):
 
 ```shell
 ./update/
@@ -373,14 +349,14 @@ export GITHUB_TOKEN=<Flux platform PAT>
 flux bootstrap github \
   --registry=ghcr.io/fluxcd \
   --owner=controlplaneio-fluxcd \
-  --repository=d1-fleet \
+  --repository=keos-fleet \
   --branch=main \
   --token-auth \
   --path=clusters/prod-eu
 ```
 
 After bootstrap, Flux will provision the production cluster with add-ons from `production`
-branch of the `d1-infra` repository.
+branch of the `keos-system-services` repository.
 
 To kick off the reconciliation of the tenant applications, the platform team must create the
 `flux-apps` secret in the `flux-system` namespace with the tenant's GitHub PAT:
@@ -396,8 +372,8 @@ flux create secret git flux-apps \
   --password=$APPS_GITHUB_TOKEN
 ```
 
-After the `d1-infra` repository reconciles, Flux will proceed to reconcile the tenant applications
-from the `production` branch of the `d1-apps` repository.
+After the `keos-system-services` repository reconciles, Flux will proceed to reconcile the tenant applications
+from the `production` branch of the `keos-apps` repository.
 
 ### Monitoring
 
