@@ -3,20 +3,14 @@
 > [!NOTE]
 > This repository is based on the `d1` reference architecture for the
 > [ControlPlane Enterprise for Flux CD](https://github.com/controlplaneio-fluxcd/distribution/blob/main/guides/ControlPlane_Flux_D1_Reference_Architecture_Guide.pdf).
->
-> The `d1` reference architecture comprised of
-> [keos-fleet](https://github.com/Stratio/keos-fleet),
-> [keos-system-services](https://github.com/Stratio/keos-system-services) and
-> [keos-apps](https://github.com/Stratio/keos-apps)
 
 ## Scope and Access Control
 
-This repository is managed by the platform and operations teams who are responsible for
-the Kubernetes infrastructure and have direct access to the fleet of clusters.
+This repository is managed by the platform and operations teams who are responsible for the Kubernetes infrastructure and have direct access to the fleet of clusters.
 
 The teams that manages this repository must have **cluster admin** rights to all clusters in the fleet to be able to perform the following tasks:
 
-- Deploy Flux on fleet clusters (this is done by default with keos-installer).
+- Deploy Flux on fleet clusters (this is done by default by keos-installer).
 - Configure the delivery of platform components (defined in [keos-system-services repository](https://github.com/Stratio/keos-system-services)).
 - Configure the delivery of applications (defined in [keos-apps repository](https://github.com/Stratio/keos-apps)).
 
