@@ -27,6 +27,15 @@ G --> I[Production-B]
 G --> J[Production-C]
 ```
 
+## Repository Configuration
+
+To avoid committing secrets to the repository, a pre-commit hook must be configured. This hook ensures that Kubernetes secret files ending in `.yaml` or `.yml` are encrypted using `sops`. The hook checks for the presence of the `sops` field in the secret files.
+
+To configure the pre-commit hook for this repository, set the `core.hooksPath` configuration to point to the `hooks` folder in the repository:
+```shell
+git config core.hooksPath hooks
+```
+
 ## GitHub Account for Flux
 
 This account will be used by the Flux controllers running on clusters to authenticate with GitHub. The account is `flux-bot-stratio` and is managed by the Platform team.

@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Pre-commit hook to validate that Kubernetes secret files are encrypted using sops.
+
+# Find all staged YAML/YML files
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.ya?ml$')
+
+for FILE in $STAGED_FILES; do
+    # Check if the file is a Kubernetes Secret
+    if grep -q "kind: Secret" "$FILE"; then
+        # Check if the file contains the sops field
+        if ! grep -q "sops:" "$FILE"; then
+            echo "Error: $FILE is a Kubernetes Secret but is not encrypted with sops."
+            echo "Please encrypt the file using sops before committing."
+            exit 1
+        fi
+    fi
+done
+
+exit 0
