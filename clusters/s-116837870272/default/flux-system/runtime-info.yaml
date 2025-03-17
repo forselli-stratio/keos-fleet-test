@@ -19,6 +19,6 @@ data:
   CONTAINER_REGISTRY_REPOSITORY_PREFIX: "/universe-14.7.0"
   HELM_REGISTRY_PROVIDER: "aws"
   HELM_REGISTRY_TYPE: "oci"
-  HELM_REGISTRY_URL: "717279725338.dkr.ecr.eu-west-1.amazonaws.com"
+  HELM_REGISTRY_URL: "oci://717279725338.dkr.ecr.eu-west-1.amazonaws.com"
   HELM_REGISTRY_REPOSITORY_PREFIX: "/helm-14.7.0"
   SOPS_SECRET_PROVIDED: "false"
